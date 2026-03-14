@@ -76,18 +76,25 @@ async def analyze_image(image_b64: str) -> dict:
                 )
             ],
             config=types.GenerateContentConfig(
-                temperature=0.2,
-                max_output_tokens=800,
+                temperature=0.1,
+                max_output_tokens=2048,
+                response_mime_type="application/json",
             ),
         )
         text = response.text.strip()
-        # Clean potential markdown wrapping
-        if text.startswith("```"):
-            text = text.split("\n", 1)[-1]
-        if text.endswith("```"):
-            text = text.rsplit("```", 1)[0]
-        text = text.strip()
         return json.loads(text)
+    except json.JSONDecodeError:
+        import re
+        try:
+            text = response.text.strip()
+            text = re.sub(r'^```(?:json)?\s*', '', text)
+            text = re.sub(r'\s*```$', '', text)
+            text = re.sub(r',\s*}', '}', text)
+            text = re.sub(r',\s*]', ']', text)
+            return json.loads(text)
+        except Exception:
+            print(f"JSON parse failed, raw: {response.text[:200]}")
+            return None
     except Exception as e:
         print(f"Analysis error: {e}")
         return None
@@ -210,7 +217,7 @@ async def ws_endpoint(websocket: WebSocket):
                             # Run structured analysis every 15 seconds
                             import time
                             now = time.time()
-                            if now - last_analysis_time > 15:
+                            if now - last_analysis_time > 30:
                                 last_analysis_time = now
                                 # Run analysis in background
                                 asyncio.create_task(
