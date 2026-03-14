@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CircuitSense — AI Electronics Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0c0f;--s1:#111318;--s2:#181c23;--b1:#1e2530;--b2:#2a3340;--gr:#00ff88;--gr2:rgba(0,255,136,.12);--am:#ffaa00;--rd:#ff4466;--bl:#4488ff;--tx:#e0e6f0;--td:#7a8899;--mo:"Space Mono",monospace;--sa:"Inter",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--sa);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,136,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.hdr{z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--b1);background:rgba(10,12,15,.97);flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px}
+.lt{font-family:var(--mo);font-size:15px;font-weight:700;color:var(--gr)}
+.ls{font-size:9px;color:var(--td);letter-spacing:.15em;text-transform:uppercase;font-family:var(--mo)}
+.sb{display:flex;gap:8px;align-items:center}
+.sp{display:flex;align-items:center;gap:4px;font-family:var(--mo);font-size:9px;color:var(--td);background:var(--s1);border:1px solid var(--b1);padding:2px 8px;border-radius:20px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--td)}
+.dot.g{background:var(--gr);box-shadow:0 0 6px var(--gr);animation:pu 2s infinite}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.3}}
+.main{flex:1;display:grid;grid-template-columns:1fr 360px;gap:1px;background:var(--b1);overflow:hidden;position:relative;z-index:1}
+.lp{background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+.sl{font-family:var(--mo);font-size:9px;color:var(--td);letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tg{background:var(--s2);border:1px solid var(--b2);padding:1px 6px;border-radius:3px;font-size:8px;color:var(--gr)}
+.tg.warn{color:var(--am);border-color:rgba(255,170,0,.3)}
+.tg.bad{color:var(--rd);border-color:rgba(255,68,102,.3)}
+.vw{position:relative;background:#000;height:170px;overflow:hidden;flex-shrink:0}
+#ve{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:none}
+.vo{position:absolute;inset:0;border:2px solid transparent;transition:border-color .3s;pointer-events:none}
+.vo.act{border-color:var(--gr)}
+.cr{position:absolute;width:12px;height:12px}
+.cr.tl{top:4px;left:4px;border-top:2px solid var(--gr);border-left:2px solid var(--gr)}
+.cr.tr{top:4px;right:4px;border-top:2px solid var(--gr);border-right:2px solid var(--gr)}
+.cr.bl{bottom:4px;left:4px;border-bottom:2px solid var(--gr);border-left:2px solid var(--gr)}
+.cr.br{bottom:4px;right:4px;border-bottom:2px solid var(--gr);border-right:2px solid var(--gr)}
+.sl2{position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gr),transparent);opacity:0}
+.vw.sc .sl2{opacity:.7;animation:scn 2s linear infinite}
+@keyframes scn{0%{top:0}100%{top:100%}}
+.vp{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--td);font-family:var(--mo);font-size:10px}
+/* Status bar */
+.status-bar{display:flex;align-items:center;gap:6px;padding:4px 12px;border-bottom:1px solid var(--b1);background:var(--s1);flex-shrink:0;font-family:var(--mo);font-size:9px}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:all .3s}
+.sdot.idle{background:var(--td)}.sdot.thinking{background:var(--am);box-shadow:0 0 6px var(--am);animation:pu 1s infinite}
+.sdot.speaking{background:var(--gr);box-shadow:0 0 6px var(--gr);animation:pu 1s infinite}
+.sdot.listening{background:var(--rd);box-shadow:0 0 6px var(--rd);animation:pu .6s infinite}
+.sdot.error{background:var(--rd)}.slbl{color:var(--td);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slbl.on{color:var(--tx)}.stmr{color:var(--td);margin-left:auto;font-size:8px;flex-shrink:0}
+/* Transcript */
+.ts{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.tb{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+.tb::-webkit-scrollbar{width:3px}.tb::-webkit-scrollbar-thumb{background:var(--b2)}
+.msg{display:flex;gap:8px;animation:fi .2s ease}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.mi{width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:7px;font-family:var(--mo);font-weight:700;flex-shrink:0;margin-top:2px}
+.msg.user .mi{background:var(--s2);border:1px solid var(--b2);color:var(--td)}
+.msg.ai .mi{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--gr)}
+.msg.sys .mi{background:rgba(255,170,0,.12);border:1px solid rgba(255,170,0,.3);color:var(--am)}
+.mc{flex:1;font-size:12px;line-height:1.5}.msg.user .mc{color:var(--td)}.msg.sys .mc{font-family:var(--mo);font-size:9px;color:var(--am)}
+.td1{width:5px;height:5px;border-radius:50%;background:var(--gr);animation:ty 1.2s ease-in-out infinite;display:inline-block;margin:0 2px}
+.td1:nth-child(2){animation-delay:.2s}.td1:nth-child(3){animation-delay:.4s}
+@keyframes ty{0%,80%,100%{opacity:.2}40%{opacity:1}}
+/* Controls */
+.cs{border-top:1px solid var(--b1);background:var(--bg);padding:8px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.btn{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:5px;border:1px solid var(--b2);background:var(--s1);color:var(--td);font-family:var(--mo);font-size:9px;cursor:pointer;transition:all .15s;white-space:nowrap;user-select:none}
+.btn:hover{border-color:var(--gr);color:var(--gr)}.btn.act{background:var(--gr2);border-color:var(--gr);color:var(--gr)}
+.bi{width:11px;height:11px;flex-shrink:0}
+.mb{background:rgba(0,255,136,.07);border-color:var(--gr);color:var(--gr)}
+.mb.rec{background:rgba(255,68,102,.15);border-color:var(--rd);color:var(--rd);box-shadow:0 0 8px rgba(255,68,102,.3)}
+.tir{flex:1;display:flex;gap:5px}
+.ti{flex:1;background:var(--s1);border:1px solid var(--b2);border-radius:5px;padding:6px 9px;color:var(--tx);font-family:var(--sa);font-size:11px;outline:none;transition:border-color .15s}
+.ti:focus{border-color:var(--gr)}.ti::placeholder{color:var(--td)}
+/* Right panel */
+.rp{background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+.rp-scroll{flex:1;overflow-y:auto;padding:0}
+.rp-scroll::-webkit-scrollbar{width:3px}.rp-scroll::-webkit-scrollbar-thumb{background:var(--b2)}
+.panel{border-bottom:1px solid var(--b1)}
+.panel-head{font-family:var(--mo);font-size:9px;color:var(--td);letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.panel-head:hover{color:var(--tx)}
+.panel-body{padding:6px 12px 10px;display:none}
+.panel.open .panel-body{display:block}
+/* Health overview */
+.health-bar{display:flex;gap:4px;margin-bottom:6px}
+.health-seg{flex:1;height:4px;border-radius:2px;background:var(--b2)}
+.health-seg.good{background:var(--gr)}.health-seg.warn{background:var(--am)}.health-seg.bad{background:var(--rd)}
+.health-label{font-family:var(--mo);font-size:10px;display:flex;align-items:center;gap:4px}
+.health-label .hdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+/* Component table */
+.comp-table{width:100%;border-collapse:collapse;font-size:10px}
+.comp-table th{font-family:var(--mo);font-size:8px;color:var(--td);text-align:left;padding:4px 6px;border-bottom:1px solid var(--b1);text-transform:uppercase;letter-spacing:.05em}
+.comp-table td{padding:4px 6px;border-bottom:1px solid var(--b1);font-family:var(--sa);vertical-align:middle}
+.comp-table tr:last-child td{border:none}
+.comp-name{color:var(--tx);font-weight:500}
+.comp-health{font-family:var(--mo);font-size:8px;padding:1px 5px;border-radius:3px;display:inline-block}
+.comp-health.good{background:rgba(0,255,136,.1);color:var(--gr);border:1px solid rgba(0,255,136,.3)}
+.comp-health.damaged{background:rgba(255,68,102,.1);color:var(--rd);border:1px solid rgba(255,68,102,.3)}
+.comp-health.unknown{background:var(--s2);color:var(--td);border:1px solid var(--b2)}
+.comp-time{color:var(--td);font-family:var(--mo);font-size:8px}
+/* Links */
+.link-item{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--b1);font-size:10px}
+.link-item:last-child{border:none}
+.link-item a{color:var(--bl);text-decoration:none;font-family:var(--mo);font-size:9px}
+.link-item a:hover{text-decoration:underline}
+/* Tags */
+.tag{display:inline-block;background:var(--gr2);border:1px solid rgba(0,255,136,.3);color:var(--gr);font-family:var(--mo);font-size:8px;padding:1px 6px;border-radius:3px;margin:2px}
+.tag.proto{background:rgba(68,136,255,.1);border-color:rgba(68,136,255,.3);color:var(--bl)}
+.tag.warn{background:rgba(255,170,0,.1);border-color:rgba(255,170,0,.3);color:var(--am)}
+/* Ideas */
+.idea-item{padding:4px 0;border-bottom:1px solid var(--b1);font-size:10px;color:var(--td);display:flex;gap:6px}
+.idea-item:last-child{border:none}
+.idea-num{color:var(--gr);font-family:var(--mo);font-size:9px;flex-shrink:0}
+/* Stats row */
+.stats-row{display:flex;gap:8px;flex-wrap:wrap}
+.stat-box{flex:1;min-width:90px;background:var(--s1);border:1px solid var(--b1);border-radius:5px;padding:8px;text-align:center}
+.stat-val{font-family:var(--mo);font-size:16px;color:var(--gr);font-weight:700}
+.stat-label{font-family:var(--mo);font-size:7px;color:var(--td);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.empty-state{color:var(--td);font-family:var(--mo);font-size:9px;text-align:center;padding:16px 8px;line-height:1.8}
+*{scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="logo">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="4" fill="rgba(0,255,136,.07)" stroke="rgba(0,255,136,.3)" stroke-width="0.5"/><circle cx="8" cy="8" r="2" fill="#00ff88"/><circle cx="24" cy="8" r="2" fill="#00ff88"/><circle cx="8" cy="24" r="2" fill="#00ff88"/><circle cx="24" cy="24" r="2" fill="#00ff88"/><circle cx="16" cy="16" r="3" fill="#00ff88"/><line x1="8" y1="8" x2="13" y2="13" stroke="#00ff88" stroke-width="0.8" opacity="0.5"/><line x1="24" y1="8" x2="19" y2="13" stroke="#00ff88" stroke-width="0.8" opacity="0.5"/><line x1="8" y1="24" x2="13" y2="19" stroke="#00ff88" stroke-width="0.8" opacity="0.5"/><line x1="24" y1="24" x2="19" y2="19" stroke="#00ff88" stroke-width="0.8" opacity="0.5"/></svg>
+    <div><div class="lt">CircuitSense</div><div class="ls">AI Electronics Lab Partner</div></div>
+  </div>
+  <div class="sb">
+    <div class="sp"><div class="dot" id="wsDot"></div><span id="wsStatus">OFFLINE</span></div>
+    <div class="sp"><div class="dot" id="camDot"></div><span id="camStatus">CAM OFF</span></div>
+    <div class="sp" style="color:rgba(0,255,136,.6)">Live API + Vision</div>
+  </div>
+</header>
+<div class="main">
+  <div class="lp">
+    <div style="flex-shrink:0;border-bottom:1px solid var(--b1)">
+      <div class="sl"><span>Vision Input</span><span class="tg" id="visionTag">INACTIVE</span></div>
+      <div class="vw" id="vw">
+        <div class="vp" id="vp"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg><span>Click Cam to start</span></div>
+        <video id="ve" autoplay muted playsinline></video>
+        <div class="vo" id="vo"><div class="cr tl"></div><div class="cr tr"></div><div class="cr bl"></div><div class="cr br"></div><div class="sl2"></div></div>
+      </div>
+    </div>
+    <div class="ts">
+      <div class="sl"><span>Session Transcript</span><span class="tg" id="sessionTag">READY</span></div>
+      <div class="status-bar"><div class="sdot idle" id="sDot"></div><span class="slbl" id="sLabel">Idle — ready for input</span><span class="stmr" id="sTimer"></span></div>
+      <div class="tb" id="tr">
+        <div class="msg sys"><div class="mi">SYS</div><div class="mc">CircuitSense ready. Connect → Cam → Hold Mic or type.</div></div>
+      </div>
+    </div>
+    <div class="cs">
+      <button class="btn mb" id="micBtn" onmousedown="startMic()" onmouseup="stopMic()" onmouseleave="stopMic()" ontouchstart="startMic()" ontouchend="stopMic()">
+        <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        <span id="micLabel">Mic</span>
+      </button>
+      <button class="btn" id="camBtn" onclick="toggleCam()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Cam</button>
+      <button class="btn" id="conBtn" onclick="toggleCon()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Connect</button>
+      <div class="tir">
+        <input class="ti" id="ti" placeholder="Ask about your hardware..." onkeydown="if(event.key==='Enter')sendText()"/>
+        <button class="btn" style="background:var(--gr2);border-color:var(--gr);color:var(--gr)" onclick="sendText()"><svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+    </div>
+  </div>
+  <div class="rp">
+    <div class="rp-scroll">
+      <!-- Health Overview -->
+      <div class="panel open" id="panelHealth">
+        <div class="panel-head" onclick="togglePanel('panelHealth')">Health Overview <span class="tg" id="healthTag">—</span></div>
+        <div class="panel-body">
+          <div class="health-bar" id="healthBar"><div class="health-seg"></div><div class="health-seg"></div><div class="health-seg"></div><div class="health-seg"></div><div class="health-seg"></div></div>
+          <div id="healthSummary" class="empty-state">Point camera at hardware to scan</div>
+        </div>
+      </div>
+      <!-- Component Inventory -->
+      <div class="panel open" id="panelInventory">
+        <div class="panel-head" onclick="togglePanel('panelInventory')">Component Inventory <span class="tg" id="compCount">0</span></div>
+        <div class="panel-body">
+          <div id="compEmpty" class="empty-state">No components detected yet</div>
+          <table class="comp-table" id="compTable" style="display:none">
+            <thead><tr><th>Component</th><th>Health</th><th>Time</th></tr></thead>
+            <tbody id="compBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Protocols & Warnings -->
+      <div class="panel open" id="panelProto">
+        <div class="panel-head" onclick="togglePanel('panelProto')">Protocols & Warnings</div>
+        <div class="panel-body">
+          <div id="protoList" class="empty-state">Scanning...</div>
+        </div>
+      </div>
+      <!-- Quick Links -->
+      <div class="panel" id="panelLinks">
+        <div class="panel-head" onclick="togglePanel('panelLinks')">Datasheets & Manuals</div>
+        <div class="panel-body">
+          <div id="linkList" class="empty-state">Links appear when components are detected</div>
+        </div>
+      </div>
+      <!-- Project Ideas -->
+      <div class="panel" id="panelIdeas">
+        <div class="panel-head" onclick="togglePanel('panelIdeas')">Project Ideas</div>
+        <div class="panel-body">
+          <div id="ideaList" class="empty-state">Ideas generated from your components</div>
+        </div>
+      </div>
+      <!-- Session Stats -->
+      <div class="panel open" id="panelStats">
+        <div class="panel-head" onclick="togglePanel('panelStats')">Session</div>
+        <div class="panel-body">
+          <div class="stats-row">
+            <div class="stat-box"><div class="stat-val" id="statComps">0</div><div class="stat-label">Components</div></div>
+            <div class="stat-box"><div class="stat-val" id="statHealth">—</div><div class="stat-label">Health</div></div>
+            <div class="stat-box"><div class="stat-val" id="statLevel">—</div><div class="stat-label">Complexity</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+var ws=null,isConn=false,camOn=false,frameInt=null,typingEl=null;
+var stTmr=null,stStart=0;
+var micCtx=null,processor=null,mediaStream=null;
+var allComponents={},lastAnalysis=null;
+var playCtx=null,nextPlayTime=0,isPlaying=false,playQ=[];
+var gotAudio=false;
+
+// ── STATUS ─────────────────────────────────────
+function setSt(s,d){stStart=Date.now();var dot=document.getElementById("sDot"),lb=document.getElementById("sLabel"),tm=document.getElementById("sTimer");
+dot.className="sdot "+s;lb.textContent=d||{idle:"Idle — ready for input",thinking:"Processing...",speaking:"AI speaking",listening:"Listening..."}[s]||s;
+lb.className="slbl"+(s!=="idle"?" on":"");if(stTmr)clearInterval(stTmr);
+if(s!=="idle"){stTmr=setInterval(function(){tm.textContent=Math.floor((Date.now()-stStart)/1000)+"s";},1000);}else{tm.textContent="";stTmr=null;}}
+
+// ── WEBSOCKET ──────────────────────────────────
+function connect(){var p=location.protocol==="https:"?"wss:":"ws:";ws=new WebSocket(p+"//"+location.host+"/ws");
+ws.onopen=function(){isConn=true;dot("wsDot","g");setText("wsStatus","CONNECTED");document.getElementById("conBtn").classList.add("act");setText("sessionTag","LIVE");setSt("idle");addMsg("sys","Connected. Camera → Mic or type.");};
+ws.onmessage=function(e){var m=JSON.parse(e.data);
+if(m.type==="ping"){ws.send(JSON.stringify({type:"pong"}));return;}
+if(m.type==="audio"){gotAudio=true;enqueue(m.data);if(stStart)setSt("speaking");rmTyping();}
+else if(m.type==="thinking"){}
+else if(m.type==="turn_complete"){if(gotAudio)addMsg("ai","(Responded via voice)");gotAudio=false;rmTyping();setSt("idle");}
+else if(m.type==="analysis"){renderAnalysis(m.data);}
+else if(m.type==="error"){addMsg("sys","Error: "+m.data);setSt("error",m.data);}
+};
+ws.onclose=function(){isConn=false;dot("wsDot","");setText("wsStatus","OFFLINE");document.getElementById("conBtn").classList.remove("act");setText("sessionTag","ENDED");setSt("error","Reconnecting...");setTimeout(function(){if(!isConn)connect();},3000);};
+ws.onerror=function(){addMsg("sys","Connection error");};
+}
+function disconn(){if(ws){ws.onclose=null;ws.close();isConn=false;dot("wsDot","");setText("wsStatus","OFFLINE");document.getElementById("conBtn").classList.remove("act");setSt("idle");}}
+function toggleCon(){isConn?disconn():connect();}
+
+// ── PLAYBACK ───────────────────────────────────
+function enqueue(b){playQ.push(Uint8Array.from(atob(b),function(c){return c.charCodeAt(0);}));if(!isPlaying)pump();}
+function pump(){if(!playCtx)playCtx=new(window.AudioContext||window.webkitAudioContext)({sampleRate:24000});
+if(playCtx.state==="suspended"){playCtx.resume().then(doPump);}else doPump();}
+function doPump(){isPlaying=true;var now=playCtx.currentTime;if(nextPlayTime<now+.05)nextPlayTime=now+.05;
+while(playQ.length>0){var b=playQ.shift(),i16=new Int16Array(b.buffer),f32=new Float32Array(i16.length);
+for(var i=0;i<i16.length;i++)f32[i]=i16[i]/32768;var buf=playCtx.createBuffer(1,f32.length,24000);buf.copyToChannel(f32,0);
+var src=playCtx.createBufferSource();src.buffer=buf;src.connect(playCtx.destination);src.start(nextPlayTime);nextPlayTime+=buf.duration;}
+var w=(nextPlayTime-playCtx.currentTime)*1000-80;setTimeout(function(){if(playQ.length>0)doPump();else{isPlaying=false;setSt("idle");}},Math.max(30,w));}
+
+// ── MIC ────────────────────────────────────────
+function pcmB64(i16){var b=new Uint8Array(i16.buffer),s="";for(var i=0;i<b.length;i+=512)s+=String.fromCharCode.apply(null,b.subarray(i,Math.min(i+512,b.length)));return btoa(s);}
+function resamp(f,fr,to){if(fr===to)return f;var r=fr/to,n=Math.round(f.length/r),o=new Float32Array(n);for(var i=0;i<n;i++){var si=i*r,idx=Math.floor(si),frac=si-idx;o[i]=(f[idx]||0)+((f[Math.min(idx+1,f.length-1)]||0)-(f[idx]||0))*frac;}return o;}
+function startMic(){if(!isConn||!ws||ws.readyState!==1){addMsg("sys","Not connected");return;}if(processor)return;
+if(!micCtx)micCtx=new(window.AudioContext||window.webkitAudioContext)();
+var res=micCtx.state==="suspended"?micCtx.resume():Promise.resolve();
+res.then(function(){navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true,autoGainControl:true}}).then(function(stream){
+mediaStream=stream;var nr=micCtx.sampleRate,src=micCtx.createMediaStreamSource(stream);
+processor=micCtx.createScriptProcessor(4096,1,1);
+processor.onaudioprocess=function(e){if(!ws||ws.readyState!==1)return;var f=e.inputBuffer.getChannelData(0),r=resamp(f,nr,16000),i16=new Int16Array(r.length);
+for(var i=0;i<r.length;i++)i16[i]=Math.max(-32768,Math.min(32767,r[i]*32768));ws.send(JSON.stringify({type:"audio",data:pcmB64(i16)}));};
+src.connect(processor);processor.connect(micCtx.destination);document.getElementById("micBtn").classList.add("rec");setText("micLabel","...");setSt("listening");addTyping();
+}).catch(function(err){addMsg("sys","Mic: "+err.message);});});}
+function stopMic(){if(processor){processor.disconnect();processor=null;}if(mediaStream){mediaStream.getTracks().forEach(function(t){t.stop();});mediaStream=null;}
+document.getElementById("micBtn").classList.remove("rec");setText("micLabel","Mic");setSt("thinking","Waiting for response...");}
+
+// ── CAMERA ─────────────────────────────────────
+function toggleCam(){camOn?stopCam():startCam();}
+function startCam(){navigator.mediaDevices.getUserMedia({video:{width:640,height:480}}).then(function(s){window._cs=s;var v=document.getElementById("ve");v.srcObject=s;v.style.display="block";
+document.getElementById("vp").style.display="none";document.getElementById("vo").classList.add("act");document.getElementById("vw").classList.add("sc");document.getElementById("camBtn").classList.add("act");
+dot("camDot","g");setText("camStatus","CAM ON");setText("visionTag","ACTIVE");camOn=true;
+frameInt=setInterval(function(){if(!ws||ws.readyState!==1)return;var c=document.createElement("canvas");c.width=320;c.height=240;c.getContext("2d").drawImage(v,0,0,320,240);
+ws.send(JSON.stringify({type:"image",data:c.toDataURL("image/jpeg",.7).split(",")[1]}));},8000);
+}).catch(function(err){addMsg("sys","Camera: "+err.message);});}
+function stopCam(){if(frameInt){clearInterval(frameInt);frameInt=null;}if(window._cs)window._cs.getTracks().forEach(function(t){t.stop();});
+var v=document.getElementById("ve");v.srcObject=null;v.style.display="none";document.getElementById("vp").style.display="flex";document.getElementById("vo").classList.remove("act");
+document.getElementById("vw").classList.remove("sc");document.getElementById("camBtn").classList.remove("act");dot("camDot","");setText("camStatus","CAM OFF");setText("visionTag","INACTIVE");camOn=false;}
+
+// ── TEXT ────────────────────────────────────────
+function sendText(){var el=document.getElementById("ti"),t=el.value.trim();if(!t||!ws||ws.readyState!==1)return;
+addMsg("user",t);ws.send(JSON.stringify({type:"text",data:t}));el.value="";addTyping();setSt("thinking","Processing: "+t.substring(0,30)+"...");}
+
+// ── ANALYSIS RENDERING ─────────────────────────
+var DATASHEET_LINKS={"ESP32":"https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf","MPU6050":"https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf","nRF24L01":"https://www.sparkfun.com/datasheets/Components/SMD/nRF24L01Pluss_Preliminary_Product_Specification_v1_0.pdf","HC-SR04":"https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf","LD2410C":"https://drive.google.com/file/d/1cYgZv8e20Vm2qe0FRZFMFNqU6jHWnTRY","STM32":"https://www.st.com/en/microcontrollers-microprocessors/stm32-32-bit-arm-cortex-mcus.html","Arduino":"https://docs.arduino.cc/","NodeMCU":"https://nodemcu.readthedocs.io/"};
+
+function renderAnalysis(data){
+  lastAnalysis=data;
+  var now=new Date().toLocaleTimeString();
+  // Update components
+  if(data.components&&data.components.length){
+    data.components.forEach(function(c){
+      var key=c.name.toLowerCase().replace(/\s+/g,"_");
+      if(!allComponents[key]) allComponents[key]={name:c.name,type:c.type,health:c.health,detail:c.health_detail,firstSeen:now,lastSeen:now,count:1};
+      else{allComponents[key].lastSeen=now;allComponents[key].count++;allComponents[key].health=c.health;allComponents[key].detail=c.health_detail;}
+    });
+  }
+  renderCompTable();
+  renderHealth(data);
+  renderProtos(data);
+  renderLinks(data);
+  renderIdeas(data);
+  renderStats(data);
+}
+
+function renderCompTable(){
+  var keys=Object.keys(allComponents);
+  if(!keys.length)return;
+  document.getElementById("compEmpty").style.display="none";
+  document.getElementById("compTable").style.display="table";
+  setText("compCount",keys.length+"");
+  setText("statComps",keys.length+"");
+  var html="";
+  keys.forEach(function(k){var c=allComponents[k];
+    var hcls=c.health==="good"?"good":c.health==="damaged"?"damaged":"unknown";
+    html+='<tr><td><span class="comp-name">'+esc(c.name)+'</span></td><td><span class="comp-health '+hcls+'">'+c.health+'</span></td><td class="comp-time">'+c.lastSeen+'</td></tr>';
+  });
+  document.getElementById("compBody").innerHTML=html;
+}
+
+function renderHealth(d){
+  var bar=document.getElementById("healthBar");
+  var oh=d.overall_health||"unknown";
+  var cls=oh==="good"?"good":oh==="needs_attention"?"warn":"bad";
+  bar.innerHTML="";for(var i=0;i<5;i++){var s=document.createElement("div");s.className="health-seg "+(i<(oh==="good"?5:oh==="needs_attention"?3:1)?cls:"");bar.appendChild(s);}
+  var htag=document.getElementById("healthTag");htag.textContent=oh.toUpperCase();htag.className="tg"+(oh==="good"?"":" "+(oh==="needs_attention"?"warn":"bad"));
+  var sum=document.getElementById("healthSummary");
+  var goods=0,bads=0;Object.values(allComponents).forEach(function(c){if(c.health==="good")goods++;if(c.health==="damaged")bads++;});
+  sum.innerHTML='<div class="health-label"><div class="hdot" style="background:var(--gr)"></div> '+goods+' healthy</div>'
+    +'<div class="health-label"><div class="hdot" style="background:var(--rd)"></div> '+bads+' issues found</div>'
+    +(d.wiring_notes?'<div style="margin-top:4px;font-size:9px;color:var(--am)">'+esc(d.wiring_notes)+'</div>':"");
+  setText("statHealth",oh==="good"?"OK":oh==="needs_attention"?"WARN":"BAD");
+}
+
+function renderProtos(d){
+  var el=document.getElementById("protoList");
+  var html="";
+  if(d.protocols_detected&&d.protocols_detected.length) d.protocols_detected.forEach(function(p){html+='<span class="tag proto">'+esc(p)+'</span>';});
+  else html+='<span style="color:var(--td);font-size:9px">None detected</span>';
+  if(d.safety_warnings&&d.safety_warnings.length){html+='<div style="margin-top:6px">';d.safety_warnings.forEach(function(w){html+='<span class="tag warn">'+esc(w)+'</span>';});html+='</div>';}
+  el.innerHTML=html;
+}
+
+function renderLinks(d){
+  var el=document.getElementById("linkList");var html="";
+  Object.keys(allComponents).forEach(function(k){var name=allComponents[k].name;
+    Object.keys(DATASHEET_LINKS).forEach(function(dk){if(name.toLowerCase().indexOf(dk.toLowerCase())>=0)html+='<div class="link-item"><span style="color:var(--gr)">&#9741;</span><a href="'+DATASHEET_LINKS[dk]+'" target="_blank">'+dk+' Datasheet / Manual</a></div>';});
+  });
+  if(d.datasheet_keywords&&d.datasheet_keywords.length){d.datasheet_keywords.forEach(function(kw){html+='<div class="link-item"><span style="color:var(--bl)">&#9906;</span><a href="https://www.google.com/search?q='+encodeURIComponent(kw+" datasheet PDF")+'" target="_blank">Search: '+esc(kw)+'</a></div>';});}
+  el.innerHTML=html||'<span class="empty-state">No links yet</span>';
+  if(html)document.getElementById("panelLinks").classList.add("open");
+}
+
+function renderIdeas(d){
+  var el=document.getElementById("ideaList");
+  if(!d.project_ideas||!d.project_ideas.length){el.innerHTML='<span class="empty-state">Ideas appear with more components</span>';return;}
+  var html="";d.project_ideas.forEach(function(idea,i){html+='<div class="idea-item"><span class="idea-num">'+(i+1)+'.</span><span>'+esc(idea)+'</span></div>';});
+  el.innerHTML=html;
+  document.getElementById("panelIdeas").classList.add("open");
+}
+
+function renderStats(d){
+  setText("statLevel",(d.complexity_score||"—").toUpperCase().substring(0,3));
+}
+
+// ── UI ─────────────────────────────────────────
+function addMsg(r,t){var tr=document.getElementById("tr"),d=document.createElement("div");d.className="msg "+r;
+var ic={user:"YOU",ai:"AI",sys:"SYS"};d.innerHTML='<div class="mi">'+(ic[r]||"SYS")+'</div><div class="mc"></div>';d.querySelector(".mc").textContent=t;
+tr.appendChild(d);scrollT();return d;}
+function addTyping(){if(typingEl)return;var t=document.getElementById("tr");typingEl=document.createElement("div");typingEl.className="msg ai";
+typingEl.innerHTML='<div class="mi">AI</div><div class="mc"><span class="td1"></span><span class="td1"></span><span class="td1"></span></div>';t.appendChild(typingEl);scrollT();}
+function rmTyping(){if(typingEl){typingEl.remove();typingEl=null;}}
+function scrollT(){document.getElementById("tr").scrollTop=99999;}
+function dot(id,c){document.getElementById(id).className="dot"+(c?" "+c:"");}
+function setText(id,v){document.getElementById(id).textContent=v;}
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+function togglePanel(id){document.getElementById(id).classList.toggle("open");}
+
+document.addEventListener("click",function(){if(playCtx&&playCtx.state==="suspended")playCtx.resume();if(micCtx&&micCtx.state==="suspended")micCtx.resume();});
+</script>
+</body>
+</html>
