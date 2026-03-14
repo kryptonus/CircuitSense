@@ -217,7 +217,7 @@ async def ws_endpoint(websocket: WebSocket):
                             # Run structured analysis every 15 seconds
                             import time
                             now = time.time()
-                            if now - last_analysis_time > 30:
+                            if now - last_analysis_time > 15:
                                 last_analysis_time = now
                                 # Run analysis in background
                                 asyncio.create_task(
