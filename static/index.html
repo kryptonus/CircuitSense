@@ -239,6 +239,7 @@ if(m.type==="audio"){gotAudio=true;enqueue(m.data);if(stStart)setSt("speaking");
 else if(m.type==="thinking"){}
 else if(m.type==="turn_complete"){if(gotAudio)addMsg("ai","(Responded via voice)");gotAudio=false;rmTyping();setSt("idle");}
 else if(m.type==="analysis"){renderAnalysis(m.data);}
+else if(m.type==="text_reply"){rmTyping();addMsg("ai",m.data);scrollT();}
 else if(m.type==="error"){addMsg("sys","Error: "+m.data);setSt("error",m.data);}
 };
 ws.onclose=function(){isConn=false;dot("wsDot","");setText("wsStatus","OFFLINE");document.getElementById("conBtn").classList.remove("act");setText("sessionTag","ENDED");setSt("error","Reconnecting...");setTimeout(function(){if(!isConn)connect();},3000);};
@@ -361,8 +362,8 @@ function renderLinks(d){
 
 function renderIdeas(d){
   var el=document.getElementById("ideaList");
-  if(!d.project_ideas||!d.project_ideas.length){el.innerHTML='<span class="empty-state">Ideas appear with more components</span>';return;}
-  var html="";d.project_ideas.forEach(function(idea,i){html+='<div class="idea-item"><span class="idea-num">'+(i+1)+'.</span><span>'+esc(idea)+'</span></div>';});
+  if(!(d.ideas||d.project_ideas)||!(d.ideas||d.project_ideas).length){el.innerHTML='<span class="empty-state">Ideas appear with more components</span>';return;}
+  var html="";(d.ideas||d.project_ideas).forEach(function(idea,i){html+='<div class="idea-item"><span class="idea-num">'+(i+1)+'.</span><span>'+esc(idea)+'</span></div>';});
   el.innerHTML=html;
   document.getElementById("panelIdeas").classList.add("open");
 }
@@ -373,7 +374,7 @@ function renderStats(d){
 
 // ── UI ─────────────────────────────────────────
 function addMsg(r,t){var tr=document.getElementById("tr"),d=document.createElement("div");d.className="msg "+r;
-var ic={user:"YOU",ai:"AI",sys:"SYS"};d.innerHTML='<div class="mi">'+(ic[r]||"SYS")+'</div><div class="mc"></div>';d.querySelector(".mc").textContent=t;
+var ic={user:"YOU",ai:"AI",sys:"SYS"};d.innerHTML='<div class="mi">'+(ic[r]||"SYS")+'</div><div class="mc"></div>';if(r==="ai"&&t.indexOf("\n")>=0){d.querySelector(".mc").innerHTML='<pre style="white-space:pre-wrap;font-family:var(--mo);font-size:11px;margin:0;color:var(--tx)">'+esc(t)+'</pre>';}else{d.querySelector(".mc").textContent=t;}
 tr.appendChild(d);scrollT();return d;}
 function addTyping(){if(typingEl)return;var t=document.getElementById("tr");typingEl=document.createElement("div");typingEl.className="msg ai";
 typingEl.innerHTML='<div class="mi">AI</div><div class="mc"><span class="td1"></span><span class="td1"></span><span class="td1"></span></div>';t.appendChild(typingEl);scrollT();}

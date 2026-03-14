@@ -16,14 +16,21 @@ LIVE_MODEL = "gemini-2.5-flash-native-audio-latest"
 # Fast text model for structured analysis
 TEXT_MODEL = "gemini-2.5-flash"
 
-SYSTEM = """You are CircuitSense, an expert electronics lab partner.
+SYSTEM = SYSTEM = """You are CircuitSense, an expert electronics lab partner.
 You know ESP32, Arduino, STM32, MPU6050, nRF24L01, HC-SR04, LD2410C, I2C, SPI, UART, drone electronics, PCB design, soldering, and general electronics.
 When you see hardware: identify it, give pinout, spot faults. Be concise and direct.
 RULES:
 - Keep replies to 2-3 sentences max. Users can ask follow-ups.
 - Always note physical condition of visible hardware (damage, bent pins, burn marks, cold solder joints, corrosion).
 - Never narrate your reasoning process. Just answer directly.
-- If you cannot hear the user, say so briefly."""
+- If you cannot hear the user, say so briefly.
+- When asked about wiring or connections, include a simple ASCII diagram like:
+  ESP32          MPU6050
+  GPIO21 (SDA) ----> SDA
+  GPIO22 (SCL) ----> SCL
+  3.3V -----------> VCC
+  GND ------------> GND
+- Keep ASCII diagrams compact and clear."""
 
 ANALYSIS_PROMPT = ANALYSIS_PROMPT =ANALYSIS_PROMPT = ANALYSIS_PROMPT = """Look at this electronics image. Return ONLY valid JSON:
 {"components":[{"name":"string","health":"good|damaged|unknown","detail":"short"}],"board":"string","protocols":["I2C"],"warnings":[],"ideas":["idea1","idea2","idea3"],"complexity":"beginner|intermediate|advanced","health":"good|needs_attention|damaged","wiring":"string","datasheet_keywords":["keyword"]}
@@ -78,7 +85,32 @@ async def analyze_image(image_b64: str) -> dict:
         print(f"Analysis error: {e}")
         return None
 
-
+async def text_answer(question: str, image_b64: str = None) -> str:
+    """Get a text answer from the fast model, with optional image context."""
+    try:
+        parts = []
+        if image_b64:
+            parts.append(types.Part(
+                inline_data=types.Blob(
+                    data=base64.b64decode(image_b64),
+                    mime_type="image/jpeg",
+                )
+            ))
+        parts.append(types.Part(text=question))
+        response = await client.aio.models.generate_content(
+            model=TEXT_MODEL,
+            contents=[types.Content(role="user", parts=parts)],
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM,
+                temperature=0.3,
+                max_output_tokens=1024,
+            ),
+        )
+        return response.text.strip()
+    except Exception as e:
+        print(f"Text answer error: {e}")
+        return None
+        
 @app.websocket("/ws")
 async def ws_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -204,12 +236,18 @@ async def ws_endpoint(websocket: WebSocket):
                                 )
 
                         elif msg["type"] == "text":
+                            user_text = msg["data"]
+                            # Send to Live API for voice response
                             await session.send_client_content(
                                 turns=types.Content(
                                     role="user",
-                                    parts=[types.Part(text=msg["data"])],
+                                    parts=[types.Part(text=user_text)],
                                 ),
                                 turn_complete=True,
+                            )
+                            # Also get text response for display
+                            asyncio.create_task(
+                                send_text_reply(websocket, user_text)
                             )
 
                         elif msg["type"] == "analyze":
@@ -243,7 +281,18 @@ async def ws_endpoint(websocket: WebSocket):
                             })
                         except Exception:
                             pass
-
+            async def send_text_reply(ws, question):
+                """Send text reply with optional image context."""
+                answer = await text_answer(question)
+                if answer:
+                    try:
+                        await ws.send_json({
+                            "type": "text_reply",
+                            "data": answer
+                        })
+                    except Exception:
+                        pass
+                        
             tasks = [
                 asyncio.create_task(from_gemini()),
                 asyncio.create_task(from_browser()),
