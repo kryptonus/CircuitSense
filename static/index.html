@@ -251,7 +251,7 @@ function toggleCon(){isConn?disconn():connect();}
 function enqueue(b){playQ.push(Uint8Array.from(atob(b),function(c){return c.charCodeAt(0);}));if(!isPlaying)pump();}
 function pump(){if(!playCtx)playCtx=new(window.AudioContext||window.webkitAudioContext)({sampleRate:24000});
 if(playCtx.state==="suspended"){playCtx.resume().then(doPump);}else doPump();}
-function doPump(){isPlaying=true;var now=playCtx.currentTime;if(nextPlayTime<now+.05)nextPlayTime=now+.05;
+function doPump(){isPlaying=true;var now=playCtx.currentTime;if(nextPlayTime<now+.18)nextPlayTime=now+.18;
 while(playQ.length>0){var b=playQ.shift(),i16=new Int16Array(b.buffer),f32=new Float32Array(i16.length);
 for(var i=0;i<i16.length;i++)f32[i]=i16[i]/32768;var buf=playCtx.createBuffer(1,f32.length,24000);buf.copyToChannel(f32,0);
 var src=playCtx.createBufferSource();src.buffer=buf;src.connect(playCtx.destination);src.start(nextPlayTime);nextPlayTime+=buf.duration;}
@@ -279,7 +279,7 @@ function startCam(){navigator.mediaDevices.getUserMedia({video:{width:640,height
 document.getElementById("vp").style.display="none";document.getElementById("vo").classList.add("act");document.getElementById("vw").classList.add("sc");document.getElementById("camBtn").classList.add("act");
 dot("camDot","g");setText("camStatus","CAM ON");setText("visionTag","ACTIVE");camOn=true;
 frameInt=setInterval(function(){if(!ws||ws.readyState!==1)return;var c=document.createElement("canvas");c.width=320;c.height=240;c.getContext("2d").drawImage(v,0,0,320,240);
-ws.send(JSON.stringify({type:"image",data:c.toDataURL("image/jpeg",.7).split(",")[1]}));},8000);
+ws.send(JSON.stringify({type:"image",data:c.toDataURL("image/jpeg",.7).split(",")[1]}));},1000);
 }).catch(function(err){addMsg("sys","Camera: "+err.message);});}
 function stopCam(){if(frameInt){clearInterval(frameInt);frameInt=null;}if(window._cs)window._cs.getTracks().forEach(function(t){t.stop();});
 var v=document.getElementById("ve");v.srcObject=null;v.style.display="none";document.getElementById("vp").style.display="flex";document.getElementById("vo").classList.remove("act");
@@ -299,8 +299,8 @@ function renderAnalysis(data){
   if(data.components&&data.components.length){
     data.components.forEach(function(c){
       var key=c.name.toLowerCase().replace(/\s+/g,"_");
-      if(!allComponents[key]) allComponents[key]={name:c.name,type:c.type,health:c.health,detail:c.health_detail,firstSeen:now,lastSeen:now,count:1};
-      else{allComponents[key].lastSeen=now;allComponents[key].count++;allComponents[key].health=c.health;allComponents[key].detail=c.health_detail;}
+  if(!allComponents[key]) allComponents[key]={name:c.name,type:c.type||"other",health:c.health,detail:c.detail||     c.health_detail||"",firstSeen:now,lastSeen:now,count:1};
+  else{allComponents[key].lastSeen=now;allComponents[key].count++;allComponents[key].health=c.health;allComponents[key].detail=c.detail||  c.health_detail||"";}
     });
   }
   renderCompTable();
@@ -328,7 +328,7 @@ function renderCompTable(){
 
 function renderHealth(d){
   var bar=document.getElementById("healthBar");
-  var oh=d.overall_health||"unknown";
+  var oh=d.health||d.overall_health||"unknown";
   var cls=oh==="good"?"good":oh==="needs_attention"?"warn":"bad";
   bar.innerHTML="";for(var i=0;i<5;i++){var s=document.createElement("div");s.className="health-seg "+(i<(oh==="good"?5:oh==="needs_attention"?3:1)?cls:"");bar.appendChild(s);}
   var htag=document.getElementById("healthTag");htag.textContent=oh.toUpperCase();htag.className="tg"+(oh==="good"?"":" "+(oh==="needs_attention"?"warn":"bad"));
@@ -343,7 +343,7 @@ function renderHealth(d){
 function renderProtos(d){
   var el=document.getElementById("protoList");
   var html="";
-  if(d.protocols_detected&&d.protocols_detected.length) d.protocols_detected.forEach(function(p){html+='<span class="tag proto">'+esc(p)+'</span>';});
+  if(d.protocols||d.protocols_detected){(d.protocols||d.protocols_detected||[]).forEach(function(p){html+='<span class="tag proto">'+esc(p)+'</span>';});}
   else html+='<span style="color:var(--td);font-size:9px">None detected</span>';
   if(d.safety_warnings&&d.safety_warnings.length){html+='<div style="margin-top:6px">';d.safety_warnings.forEach(function(w){html+='<span class="tag warn">'+esc(w)+'</span>';});html+='</div>';}
   el.innerHTML=html;

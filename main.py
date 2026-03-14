@@ -25,30 +25,9 @@ RULES:
 - Never narrate your reasoning process. Just answer directly.
 - If you cannot hear the user, say so briefly."""
 
-ANALYSIS_PROMPT = """Analyze this electronics image and return ONLY a JSON object (no markdown, no backticks, no explanation). Use this exact format:
-{
-  "components": [
-    {
-      "name": "Component Name",
-      "type": "microcontroller|sensor|module|passive|connector|other",
-      "health": "good|damaged|unknown",
-      "health_detail": "brief reason",
-      "pins_visible": true,
-      "notes": "any observation"
-    }
-  ],
-  "board_type": "name of main board if identifiable",
-  "protocols_detected": ["I2C","SPI","UART"],
-  "safety_warnings": ["any safety concern"],
-  "project_ideas": ["idea 1","idea 2","idea 3"],
-  "complexity_score": "beginner|intermediate|advanced",
-  "estimated_bom_usd": 0.00,
-  "datasheet_keywords": ["search term for main component datasheet"],
-  "wiring_notes": "any visible wiring observations",
-  "overall_health": "good|needs_attention|damaged"
-}
-If no electronics visible, return: {"components":[],"board_type":"none","protocols_detected":[],"safety_warnings":[],"project_ideas":[],"complexity_score":"unknown","estimated_bom_usd":0,"datasheet_keywords":[],"wiring_notes":"","overall_health":"unknown"}"""
-
+ANALYSIS_PROMPT = ANALYSIS_PROMPT =ANALYSIS_PROMPT = ANALYSIS_PROMPT = """Look at this electronics image. Return ONLY valid JSON:
+{"components":[{"name":"string","health":"good|damaged|unknown","detail":"short"}],"board":"string","protocols":["I2C"],"warnings":[],"ideas":["idea1","idea2","idea3"],"complexity":"beginner|intermediate|advanced","health":"good|needs_attention|damaged","wiring":"string","datasheet_keywords":["keyword"]}
+Keep component names SHORT (max 4 words). Max 8 components. No long descriptions."""
 
 @app.get("/")
 async def root():
@@ -77,7 +56,7 @@ async def analyze_image(image_b64: str) -> dict:
             ],
             config=types.GenerateContentConfig(
                 temperature=0.1,
-                max_output_tokens=2048,
+                max_output_tokens=4096,
                 response_mime_type="application/json",
             ),
         )
