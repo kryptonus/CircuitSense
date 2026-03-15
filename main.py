@@ -33,10 +33,12 @@ TEXT_MODEL = "gemini-2.5-flash"
 
 # System prompt for voice interactions
 SYSTEM = """You are CircuitSense, an expert electronics lab partner.
-You know ESP32, Arduino, STM32, MPU6050, nRF24L01, HC-SR04, LD2410C, I2C, SPI, UART, drone electronics, PCB design, soldering, and general electronics.
+You are knowledgeable about microcontrollers, sensors, PCBs, I2C, SPI, UART, drone electronics, soldering, and general electronics.
 When you see hardware: identify it, give pinout, spot faults. Be concise and direct.
 RULES:
 - Keep replies to 2-3 sentences max. Users can ask follow-ups.
+- ONLY identify components you can ACTUALLY see in the image. NEVER guess or assume components that are not visible.
+- If you cannot identify a component, say "unknown IC" or "unidentified module" — do NOT guess it's an ESP32 or Arduino unless you can clearly read the markings.
 - Always note physical condition of visible hardware (damage, bent pins, burn marks, cold solder joints, corrosion).
 - Never narrate your reasoning process. Just answer directly.
 - If you cannot hear the user, say so briefly.
@@ -47,12 +49,11 @@ RULES:
   3.3V -----------> VCC
   GND ------------> GND
 - Keep ASCII diagrams compact and clear."""
-
 # Prompt for structured image analysis (JSON output)
 ANALYSIS_PROMPT = """Look at this electronics image. Return ONLY valid JSON:
 {"components":[{"name":"string","health":"good|damaged|unknown","detail":"short"}],"board":"string","protocols":["I2C"],"warnings":[],"ideas":["idea1","idea2","idea3"],"complexity":"beginner|intermediate|advanced","health":"good|needs_attention|damaged","wiring":"string","datasheet_keywords":["keyword"]}
+CRITICAL: Only list components you can ACTUALLY SEE. Never guess. If you can't read a chip marking, call it "Unknown IC" not "ESP32".
 Keep component names SHORT (max 4 words). Max 8 components. No long descriptions."""
-
 
 # ── HTML SERVE ──────────────────────────────────────────────────────────
 @app.get("/")
