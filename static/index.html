@@ -10,25 +10,25 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--tx);font-family:var(--sa);height:100vh;overflow:hidden;display:flex;flex-direction:column}
 body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,136,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+/* Header */
 .hdr{z-index:10;display:flex;align-items:center;justify-content:space-between;padding:8px 16px;border-bottom:1px solid var(--b1);background:rgba(10,12,15,.97);flex-shrink:0}
 .logo{display:flex;align-items:center;gap:8px}
 .lt{font-family:var(--mo);font-size:15px;font-weight:700;color:var(--gr)}
 .ls{font-size:9px;color:var(--td);letter-spacing:.15em;text-transform:uppercase;font-family:var(--mo)}
 .sb{display:flex;gap:8px;align-items:center}
 .sp{display:flex;align-items:center;gap:4px;font-family:var(--mo);font-size:9px;color:var(--td);background:var(--s1);border:1px solid var(--b1);padding:2px 8px;border-radius:20px}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--td)}
-.dot.g{background:var(--gr);box-shadow:0 0 6px var(--gr);animation:pu 2s infinite}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--td)}.dot.g{background:var(--gr);box-shadow:0 0 6px var(--gr);animation:pu 2s infinite}
 @keyframes pu{0%,100%{opacity:1}50%{opacity:.3}}
+/* Main grid */
 .main{flex:1;display:grid;grid-template-columns:1fr 360px;gap:1px;background:var(--b1);overflow:hidden;position:relative;z-index:1}
 .lp{background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
 .sl{font-family:var(--mo);font-size:9px;color:var(--td);letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .tg{background:var(--s2);border:1px solid var(--b2);padding:1px 6px;border-radius:3px;font-size:8px;color:var(--gr)}
-.tg.warn{color:var(--am);border-color:rgba(255,170,0,.3)}
-.tg.bad{color:var(--rd);border-color:rgba(255,68,102,.3)}
+.tg.warn{color:var(--am);border-color:rgba(255,170,0,.3)}.tg.bad{color:var(--rd);border-color:rgba(255,68,102,.3)}
+/* Camera */
 .vw{position:relative;background:#000;height:170px;overflow:hidden;flex-shrink:0}
 #ve{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:none}
-.vo{position:absolute;inset:0;border:2px solid transparent;transition:border-color .3s;pointer-events:none}
-.vo.act{border-color:var(--gr)}
+.vo{position:absolute;inset:0;border:2px solid transparent;transition:border-color .3s;pointer-events:none}.vo.act{border-color:var(--gr)}
 .cr{position:absolute;width:12px;height:12px}
 .cr.tl{top:4px;left:4px;border-top:2px solid var(--gr);border-left:2px solid var(--gr)}
 .cr.tr{top:4px;right:4px;border-top:2px solid var(--gr);border-right:2px solid var(--gr)}
@@ -60,6 +60,11 @@ body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(
 .td1{width:5px;height:5px;border-radius:50%;background:var(--gr);animation:ty 1.2s ease-in-out infinite;display:inline-block;margin:0 2px}
 .td1:nth-child(2){animation-delay:.2s}.td1:nth-child(3){animation-delay:.4s}
 @keyframes ty{0%,80%,100%{opacity:.2}40%{opacity:1}}
+/* Mode bar */
+.mode-bar{display:flex;gap:3px;padding:4px 10px;border-bottom:1px solid var(--b1);background:var(--s1);flex-shrink:0}
+.mode-btn{padding:4px 10px;border-radius:4px;border:1px solid var(--b2);background:var(--s2);color:var(--td);font-family:var(--mo);font-size:8px;cursor:pointer;transition:all .15s;letter-spacing:.05em}
+.mode-btn:hover{border-color:var(--gr);color:var(--gr)}
+.mode-btn.act{background:var(--gr2);border-color:var(--gr);color:var(--gr);box-shadow:0 0 8px rgba(0,255,136,.15)}
 /* Controls */
 .cs{border-top:1px solid var(--b1);background:var(--bg);padding:8px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0}
 .btn{display:flex;align-items:center;gap:4px;padding:6px 10px;border-radius:5px;border:1px solid var(--b2);background:var(--s1);color:var(--td);font-family:var(--mo);font-size:9px;cursor:pointer;transition:all .15s;white-space:nowrap;user-select:none}
@@ -76,10 +81,8 @@ body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(
 .rp-scroll::-webkit-scrollbar{width:3px}.rp-scroll::-webkit-scrollbar-thumb{background:var(--b2)}
 .panel{border-bottom:1px solid var(--b1)}
 .panel-head{font-family:var(--mo);font-size:9px;color:var(--td);letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
-.panel-head:hover{color:var(--tx)}
-.panel-body{padding:6px 12px 10px;display:none}
-.panel.open .panel-body{display:block}
-/* Health overview */
+.panel-head:hover{color:var(--tx)}.panel-body{padding:6px 12px 10px;display:none}.panel.open .panel-body{display:block}
+/* Health */
 .health-bar{display:flex;gap:4px;margin-bottom:6px}
 .health-seg{flex:1;height:4px;border-radius:2px;background:var(--b2)}
 .health-seg.good{background:var(--gr)}.health-seg.warn{background:var(--am)}.health-seg.bad{background:var(--rd)}
@@ -96,24 +99,29 @@ body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(
 .comp-health.damaged{background:rgba(255,68,102,.1);color:var(--rd);border:1px solid rgba(255,68,102,.3)}
 .comp-health.unknown{background:var(--s2);color:var(--td);border:1px solid var(--b2)}
 .comp-time{color:var(--td);font-family:var(--mo);font-size:8px}
+/* Tags */
+.tag{display:inline-block;background:var(--gr2);border:1px solid rgba(0,255,136,.3);color:var(--gr);font-family:var(--mo);font-size:8px;padding:1px 6px;border-radius:3px;margin:2px}
+.tag.proto{background:rgba(68,136,255,.1);border-color:rgba(68,136,255,.3);color:var(--bl)}
+.tag.warn{background:rgba(255,170,0,.1);border-color:rgba(255,170,0,.3);color:var(--am)}
 /* Links */
 .link-item{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--b1);font-size:10px}
 .link-item:last-child{border:none}
 .link-item a{color:var(--bl);text-decoration:none;font-family:var(--mo);font-size:9px}
 .link-item a:hover{text-decoration:underline}
-/* Tags */
-.tag{display:inline-block;background:var(--gr2);border:1px solid rgba(0,255,136,.3);color:var(--gr);font-family:var(--mo);font-size:8px;padding:1px 6px;border-radius:3px;margin:2px}
-.tag.proto{background:rgba(68,136,255,.1);border-color:rgba(68,136,255,.3);color:var(--bl)}
-.tag.warn{background:rgba(255,170,0,.1);border-color:rgba(255,170,0,.3);color:var(--am)}
 /* Ideas */
 .idea-item{padding:4px 0;border-bottom:1px solid var(--b1);font-size:10px;color:var(--td);display:flex;gap:6px}
 .idea-item:last-child{border:none}
 .idea-num{color:var(--gr);font-family:var(--mo);font-size:9px;flex-shrink:0}
-/* Stats row */
+/* Stats */
 .stats-row{display:flex;gap:8px;flex-wrap:wrap}
-.stat-box{flex:1;min-width:90px;background:var(--s1);border:1px solid var(--b1);border-radius:5px;padding:8px;text-align:center}
+.stat-box{flex:1;min-width:80px;background:var(--s1);border:1px solid var(--b1);border-radius:5px;padding:8px;text-align:center}
 .stat-val{font-family:var(--mo);font-size:16px;color:var(--gr);font-weight:700}
 .stat-label{font-family:var(--mo);font-size:7px;color:var(--td);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+/* Component diagram */
+.comp-diagram{font-family:var(--mo);font-size:9px;color:var(--gr);background:var(--s1);border:1px solid var(--b1);border-radius:5px;padding:8px;white-space:pre;overflow-x:auto;line-height:1.4}
+/* Export btn */
+.export-btn{width:100%;padding:6px;border:1px solid var(--b2);background:var(--s2);color:var(--td);font-family:var(--mo);font-size:9px;border-radius:4px;cursor:pointer;transition:all .15s}
+.export-btn:hover{border-color:var(--gr);color:var(--gr)}
 .empty-state{color:var(--td);font-family:var(--mo);font-size:9px;text-align:center;padding:16px 8px;line-height:1.8}
 *{scrollbar-width:thin;scrollbar-color:var(--b2) transparent}
 </style>
@@ -132,6 +140,7 @@ body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(
 </header>
 <div class="main">
   <div class="lp">
+    <!-- Camera -->
     <div style="flex-shrink:0;border-bottom:1px solid var(--b1)">
       <div class="sl"><span>Vision Input</span><span class="tg" id="visionTag">INACTIVE</span></div>
       <div class="vw" id="vw">
@@ -140,13 +149,23 @@ body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(
         <div class="vo" id="vo"><div class="cr tl"></div><div class="cr tr"></div><div class="cr bl"></div><div class="cr br"></div><div class="sl2"></div></div>
       </div>
     </div>
+    <!-- Mode buttons -->
+    <div class="mode-bar">
+      <button class="mode-btn act" id="mScan" onclick="setMode('scan')">SCAN</button>
+      <button class="mode-btn" id="mDiagnose" onclick="setMode('diagnose')">DIAGNOSE</button>
+      <button class="mode-btn" id="mWire" onclick="setMode('wire')">WIRE</button>
+      <button class="mode-btn" id="mLearn" onclick="setMode('learn')">LEARN</button>
+      <span style="margin-left:auto;font-family:var(--mo);font-size:8px;color:var(--td)" id="modeLabel">Mode: SCAN</span>
+    </div>
+    <!-- Transcript -->
     <div class="ts">
       <div class="sl"><span>Session Transcript</span><span class="tg" id="sessionTag">READY</span></div>
       <div class="status-bar"><div class="sdot idle" id="sDot"></div><span class="slbl" id="sLabel">Idle — ready for input</span><span class="stmr" id="sTimer"></span></div>
       <div class="tb" id="tr">
-        <div class="msg sys"><div class="mi">SYS</div><div class="mc">CircuitSense ready. Connect → Cam → Hold Mic or type.</div></div>
+        <div class="msg sys"><div class="mi">SYS</div><div class="mc">CircuitSense ready. Connect → Cam → select a mode or type a question.</div></div>
       </div>
     </div>
+    <!-- Controls -->
     <div class="cs">
       <button class="btn mb" id="micBtn" onmousedown="startMic()" onmouseup="stopMic()" onmouseleave="stopMic()" ontouchstart="startMic()" ontouchend="stopMic()">
         <svg class="bi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
@@ -160,6 +179,7 @@ body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(
       </div>
     </div>
   </div>
+  <!-- Right sidebar -->
   <div class="rp">
     <div class="rp-scroll">
       <!-- Health Overview -->
@@ -181,26 +201,27 @@ body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(
           </table>
         </div>
       </div>
+      <!-- Component Diagram -->
+      <div class="panel" id="panelDiagram">
+        <div class="panel-head" onclick="togglePanel('panelDiagram')">Component Diagram</div>
+        <div class="panel-body">
+          <div class="comp-diagram" id="compDiagram">No components detected yet</div>
+        </div>
+      </div>
       <!-- Protocols & Warnings -->
       <div class="panel open" id="panelProto">
         <div class="panel-head" onclick="togglePanel('panelProto')">Protocols & Warnings</div>
-        <div class="panel-body">
-          <div id="protoList" class="empty-state">Scanning...</div>
-        </div>
+        <div class="panel-body"><div id="protoList" class="empty-state">Scanning...</div></div>
       </div>
-      <!-- Quick Links -->
+      <!-- Datasheets -->
       <div class="panel" id="panelLinks">
         <div class="panel-head" onclick="togglePanel('panelLinks')">Datasheets & Manuals</div>
-        <div class="panel-body">
-          <div id="linkList" class="empty-state">Links appear when components are detected</div>
-        </div>
+        <div class="panel-body"><div id="linkList" class="empty-state">Links appear when components are detected</div></div>
       </div>
       <!-- Project Ideas -->
       <div class="panel" id="panelIdeas">
         <div class="panel-head" onclick="togglePanel('panelIdeas')">Project Ideas</div>
-        <div class="panel-body">
-          <div id="ideaList" class="empty-state">Ideas generated from your components</div>
-        </div>
+        <div class="panel-body"><div id="ideaList" class="empty-state">Ideas generated from your components</div></div>
       </div>
       <!-- Session Stats -->
       <div class="panel open" id="panelStats">
@@ -211,18 +232,22 @@ body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(
             <div class="stat-box"><div class="stat-val" id="statHealth">—</div><div class="stat-label">Health</div></div>
             <div class="stat-box"><div class="stat-val" id="statLevel">—</div><div class="stat-label">Complexity</div></div>
           </div>
+          <button class="export-btn" onclick="exportSession()" style="margin-top:8px">Export Session Report</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 <script>
+// ── STATE ──────────────────────────────────────
 var ws=null,isConn=false,camOn=false,frameInt=null,typingEl=null;
 var stTmr=null,stStart=0;
 var micCtx=null,processor=null,mediaStream=null;
 var allComponents={},lastAnalysis=null;
 var playCtx=null,nextPlayTime=0,isPlaying=false,playQ=[];
-var gotAudio=false;
+var gotAudio=false,currentMode="scan";
+var aiMsgEl=null,aiMsgText="";
+var sessionLog=[];
 
 // ── STATUS ─────────────────────────────────────
 function setSt(s,d){stStart=Date.now();var dot=document.getElementById("sDot"),lb=document.getElementById("sLabel"),tm=document.getElementById("sTimer");
@@ -230,20 +255,83 @@ dot.className="sdot "+s;lb.textContent=d||{idle:"Idle — ready for input",think
 lb.className="slbl"+(s!=="idle"?" on":"");if(stTmr)clearInterval(stTmr);
 if(s!=="idle"){stTmr=setInterval(function(){tm.textContent=Math.floor((Date.now()-stStart)/1000)+"s";},1000);}else{tm.textContent="";stTmr=null;}}
 
+// ── MODES ──────────────────────────────────────
+function setMode(m){
+  currentMode=m;
+  document.querySelectorAll(".mode-btn").forEach(function(b){b.classList.remove("act");});
+  document.getElementById("m"+m.charAt(0).toUpperCase()+m.slice(1)).classList.add("act");
+  document.getElementById("modeLabel").textContent="Mode: "+m.toUpperCase();
+  var prompts={
+    scan:"Scan and identify all visible components, their condition, and connections.",
+    diagnose:"Look for faults: burnt traces, cold solder joints, bent pins, swollen capacitors, corrosion, or damaged components. Report any issues found.",
+    wire:"I need wiring help. What connections do you see? Are they correct? Show me an ASCII wiring diagram.",
+    learn:"Explain what each visible component does in simple terms, as if teaching a beginner. What is each part's role in the circuit?"
+  };
+  if(ws&&ws.readyState===1){
+    addMsg("sys","Mode: "+m.toUpperCase());
+    ws.send(JSON.stringify({type:"text",data:prompts[m]+" Analyze what you see in the camera."}));
+    addTyping();
+    setSt("thinking","Running "+m+" mode...");
+  }
+}
+
 // ── WEBSOCKET ──────────────────────────────────
-function connect(){var p=location.protocol==="https:"?"wss:":"ws:";ws=new WebSocket(p+"//"+location.host+"/ws");
-ws.onopen=function(){isConn=true;dot("wsDot","g");setText("wsStatus","CONNECTED");document.getElementById("conBtn").classList.add("act");setText("sessionTag","LIVE");setSt("idle");addMsg("sys","Connected. Camera → Mic or type.");};
-ws.onmessage=function(e){var m=JSON.parse(e.data);
-if(m.type==="ping"){ws.send(JSON.stringify({type:"pong"}));return;}
-if(m.type==="audio"){gotAudio=true;enqueue(m.data);if(stStart)setSt("speaking");rmTyping();}
-else if(m.type==="thinking"){}
-else if(m.type==="turn_complete"){if(gotAudio)addMsg("ai","(Responded via voice)");gotAudio=false;rmTyping();setSt("idle");}
-else if(m.type==="analysis"){renderAnalysis(m.data);}
-else if(m.type==="text_reply"){rmTyping();addMsg("ai",m.data);scrollT();}
-else if(m.type==="error"){addMsg("sys","Error: "+m.data);setSt("error",m.data);}
-};
-ws.onclose=function(){isConn=false;dot("wsDot","");setText("wsStatus","OFFLINE");document.getElementById("conBtn").classList.remove("act");setText("sessionTag","ENDED");setSt("error","Reconnecting...");setTimeout(function(){if(!isConn)connect();},3000);};
-ws.onerror=function(){addMsg("sys","Connection error");};
+function connect(){
+  var p=location.protocol==="https:"?"wss:":"ws:";
+  ws=new WebSocket(p+"//"+location.host+"/ws");
+  ws.onopen=function(){
+    isConn=true;dot("wsDot","g");setText("wsStatus","CONNECTED");
+    document.getElementById("conBtn").classList.add("act");
+    setText("sessionTag","LIVE");setSt("idle");
+    addMsg("sys","Connected. Camera → select mode or type a question.");
+  };
+  ws.onmessage=function(e){
+    var m=JSON.parse(e.data);
+    if(m.type==="ping"){ws.send(JSON.stringify({type:"pong"}));return;}
+    if(m.type==="audio"){
+      gotAudio=true;
+      enqueue(m.data);
+      if(stStart)setSt("speaking");
+      rmTyping();
+    }
+    else if(m.type==="thinking"){
+      // Show thinking text as AI message
+      if(!aiMsgEl){aiMsgEl=addMsg("ai","");aiMsgText="";}
+      aiMsgText+=m.data;
+      var clean=aiMsgText.replace(/\*\*[^*]+\*\*/g,"").replace(/\s{2,}/g," ").trim();
+      if(clean){
+        if(clean.indexOf("\n")>=0){
+          aiMsgEl.querySelector(".mc").innerHTML='<pre style="white-space:pre-wrap;font-family:var(--mo);font-size:11px;margin:0;color:var(--tx)">'+esc(clean)+'</pre>';
+        } else {
+          aiMsgEl.querySelector(".mc").textContent=clean;
+        }
+      }
+      scrollT();
+    }
+    else if(m.type==="text_reply"){
+      rmTyping();
+      var msg=addMsg("ai",m.data);
+      if(m.data.indexOf("\n")>=0){
+        msg.querySelector(".mc").innerHTML='<pre style="white-space:pre-wrap;font-family:var(--mo);font-size:11px;margin:0;color:var(--tx)">'+esc(m.data)+'</pre>';
+      }
+      sessionLog.push({role:"ai",text:m.data,time:new Date().toLocaleTimeString()});
+      scrollT();
+    }
+    else if(m.type==="turn_complete"){
+      if(!aiMsgEl&&gotAudio) addMsg("ai","(Responded via voice)");
+      if(aiMsgEl&&aiMsgText) sessionLog.push({role:"ai",text:aiMsgText,time:new Date().toLocaleTimeString()});
+      aiMsgEl=null;aiMsgText="";gotAudio=false;rmTyping();setSt("idle");
+    }
+    else if(m.type==="analysis"){renderAnalysis(m.data);}
+    else if(m.type==="error"){addMsg("sys","Error: "+m.data);setSt("error",m.data);}
+  };
+  ws.onclose=function(){
+    isConn=false;dot("wsDot","");setText("wsStatus","OFFLINE");
+    document.getElementById("conBtn").classList.remove("act");
+    setText("sessionTag","ENDED");setSt("error","Reconnecting...");
+    setTimeout(function(){if(!isConn)connect();},3000);
+  };
+  ws.onerror=function(){addMsg("sys","Connection error");};
 }
 function disconn(){if(ws){ws.onclose=null;ws.close();isConn=false;dot("wsDot","");setText("wsStatus","OFFLINE");document.getElementById("conBtn").classList.remove("act");setSt("idle");}}
 function toggleCon(){isConn?disconn():connect();}
@@ -261,34 +349,62 @@ var w=(nextPlayTime-playCtx.currentTime)*1000-80;setTimeout(function(){if(playQ.
 // ── MIC ────────────────────────────────────────
 function pcmB64(i16){var b=new Uint8Array(i16.buffer),s="";for(var i=0;i<b.length;i+=512)s+=String.fromCharCode.apply(null,b.subarray(i,Math.min(i+512,b.length)));return btoa(s);}
 function resamp(f,fr,to){if(fr===to)return f;var r=fr/to,n=Math.round(f.length/r),o=new Float32Array(n);for(var i=0;i<n;i++){var si=i*r,idx=Math.floor(si),frac=si-idx;o[i]=(f[idx]||0)+((f[Math.min(idx+1,f.length-1)]||0)-(f[idx]||0))*frac;}return o;}
-function startMic(){if(!isConn||!ws||ws.readyState!==1){addMsg("sys","Not connected");return;}if(processor)return;
-if(!micCtx)micCtx=new(window.AudioContext||window.webkitAudioContext)();
-var res=micCtx.state==="suspended"?micCtx.resume():Promise.resolve();
-res.then(function(){navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true,autoGainControl:true}}).then(function(stream){
-mediaStream=stream;var nr=micCtx.sampleRate,src=micCtx.createMediaStreamSource(stream);
-processor=micCtx.createScriptProcessor(4096,1,1);
-processor.onaudioprocess=function(e){if(!ws||ws.readyState!==1)return;var f=e.inputBuffer.getChannelData(0),r=resamp(f,nr,16000),i16=new Int16Array(r.length);
-for(var i=0;i<r.length;i++)i16[i]=Math.max(-32768,Math.min(32767,r[i]*32768));ws.send(JSON.stringify({type:"audio",data:pcmB64(i16)}));};
-src.connect(processor);processor.connect(micCtx.destination);document.getElementById("micBtn").classList.add("rec");setText("micLabel","...");setSt("listening");addTyping();
-}).catch(function(err){addMsg("sys","Mic: "+err.message);});});}
-function stopMic(){if(processor){processor.disconnect();processor=null;}if(mediaStream){mediaStream.getTracks().forEach(function(t){t.stop();});mediaStream=null;}
-document.getElementById("micBtn").classList.remove("rec");setText("micLabel","Mic");setSt("thinking","Waiting for response...");}
+function startMic(){
+  if(!isConn||!ws||ws.readyState!==1){addMsg("sys","Not connected");return;}
+  if(processor)return;
+  if(!micCtx)micCtx=new(window.AudioContext||window.webkitAudioContext)();
+  var res=micCtx.state==="suspended"?micCtx.resume():Promise.resolve();
+  res.then(function(){navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true,autoGainControl:true}}).then(function(stream){
+    mediaStream=stream;var nr=micCtx.sampleRate,src=micCtx.createMediaStreamSource(stream);
+    processor=micCtx.createScriptProcessor(4096,1,1);
+    processor.onaudioprocess=function(e){if(!ws||ws.readyState!==1)return;var f=e.inputBuffer.getChannelData(0),r=resamp(f,nr,16000),i16=new Int16Array(r.length);
+    for(var i=0;i<r.length;i++)i16[i]=Math.max(-32768,Math.min(32767,r[i]*32768));ws.send(JSON.stringify({type:"audio",data:pcmB64(i16)}));};
+    src.connect(processor);processor.connect(micCtx.destination);
+    document.getElementById("micBtn").classList.add("rec");setText("micLabel","...");setSt("listening");addTyping();
+  }).catch(function(err){addMsg("sys","Mic: "+err.message);});});
+}
+function stopMic(){
+  if(processor){processor.disconnect();processor=null;}
+  if(mediaStream){mediaStream.getTracks().forEach(function(t){t.stop();});mediaStream=null;}
+  document.getElementById("micBtn").classList.remove("rec");setText("micLabel","Mic");
+  setSt("thinking","Waiting for response...");
+}
 
 // ── CAMERA ─────────────────────────────────────
 function toggleCam(){camOn?stopCam():startCam();}
-function startCam(){navigator.mediaDevices.getUserMedia({video:{width:640,height:480}}).then(function(s){window._cs=s;var v=document.getElementById("ve");v.srcObject=s;v.style.display="block";
-document.getElementById("vp").style.display="none";document.getElementById("vo").classList.add("act");document.getElementById("vw").classList.add("sc");document.getElementById("camBtn").classList.add("act");
-dot("camDot","g");setText("camStatus","CAM ON");setText("visionTag","ACTIVE");camOn=true;
-frameInt=setInterval(function(){if(!ws||ws.readyState!==1)return;var c=document.createElement("canvas");c.width=320;c.height=240;c.getContext("2d").drawImage(v,0,0,320,240);
-ws.send(JSON.stringify({type:"image",data:c.toDataURL("image/jpeg",.7).split(",")[1]}));},1000);
-}).catch(function(err){addMsg("sys","Camera: "+err.message);});}
-function stopCam(){if(frameInt){clearInterval(frameInt);frameInt=null;}if(window._cs)window._cs.getTracks().forEach(function(t){t.stop();});
-var v=document.getElementById("ve");v.srcObject=null;v.style.display="none";document.getElementById("vp").style.display="flex";document.getElementById("vo").classList.remove("act");
-document.getElementById("vw").classList.remove("sc");document.getElementById("camBtn").classList.remove("act");dot("camDot","");setText("camStatus","CAM OFF");setText("visionTag","INACTIVE");camOn=false;}
+function startCam(){
+  navigator.mediaDevices.getUserMedia({video:{width:640,height:480}}).then(function(s){
+    window._cs=s;var v=document.getElementById("ve");v.srcObject=s;v.style.display="block";
+    document.getElementById("vp").style.display="none";document.getElementById("vo").classList.add("act");
+    document.getElementById("vw").classList.add("sc");document.getElementById("camBtn").classList.add("act");
+    dot("camDot","g");setText("camStatus","CAM ON");setText("visionTag","ACTIVE");camOn=true;
+    frameInt=setInterval(function(){
+      if(!ws||ws.readyState!==1)return;
+      var c=document.createElement("canvas");c.width=320;c.height=240;
+      c.getContext("2d").drawImage(v,0,0,320,240);
+      ws.send(JSON.stringify({type:"image",data:c.toDataURL("image/jpeg",.7).split(",")[1]}));
+    },1000);
+  }).catch(function(err){addMsg("sys","Camera: "+err.message);});
+}
+function stopCam(){
+  if(frameInt){clearInterval(frameInt);frameInt=null;}
+  if(window._cs)window._cs.getTracks().forEach(function(t){t.stop();});
+  var v=document.getElementById("ve");v.srcObject=null;v.style.display="none";
+  document.getElementById("vp").style.display="flex";document.getElementById("vo").classList.remove("act");
+  document.getElementById("vw").classList.remove("sc");document.getElementById("camBtn").classList.remove("act");
+  dot("camDot","");setText("camStatus","CAM OFF");setText("visionTag","INACTIVE");camOn=false;
+}
 
-// ── TEXT ────────────────────────────────────────
-function sendText(){var el=document.getElementById("ti"),t=el.value.trim();if(!t||!ws||ws.readyState!==1)return;
-addMsg("user",t);ws.send(JSON.stringify({type:"text",data:t}));el.value="";addTyping();setSt("thinking","Processing: "+t.substring(0,30)+"...");}
+// ── TEXT INPUT ──────────────────────────────────
+function sendText(){
+  var el=document.getElementById("ti"),t=el.value.trim();
+  if(!t||!ws||ws.readyState!==1)return;
+  addMsg("user",t);
+  sessionLog.push({role:"user",text:t,time:new Date().toLocaleTimeString()});
+  ws.send(JSON.stringify({type:"text",data:t}));
+  el.value="";addTyping();
+  setSt("thinking","Processing: "+t.substring(0,30)+"...");
+}
 
 // ── ANALYSIS RENDERING ─────────────────────────
 var DATASHEET_LINKS={"ESP32":"https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf","MPU6050":"https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf","nRF24L01":"https://www.sparkfun.com/datasheets/Components/SMD/nRF24L01Pluss_Preliminary_Product_Specification_v1_0.pdf","HC-SR04":"https://cdn.sparkfun.com/datasheets/Sensors/Proximity/HCSR04.pdf","LD2410C":"https://drive.google.com/file/d/1cYgZv8e20Vm2qe0FRZFMFNqU6jHWnTRY","STM32":"https://www.st.com/en/microcontrollers-microprocessors/stm32-32-bit-arm-cortex-mcus.html","Arduino":"https://docs.arduino.cc/","NodeMCU":"https://nodemcu.readthedocs.io/"};
@@ -296,12 +412,11 @@ var DATASHEET_LINKS={"ESP32":"https://www.espressif.com/sites/default/files/docu
 function renderAnalysis(data){
   lastAnalysis=data;
   var now=new Date().toLocaleTimeString();
-  // Update components
   if(data.components&&data.components.length){
     data.components.forEach(function(c){
       var key=c.name.toLowerCase().replace(/\s+/g,"_");
-  if(!allComponents[key]) allComponents[key]={name:c.name,type:c.type||"other",health:c.health,detail:c.detail||     c.health_detail||"",firstSeen:now,lastSeen:now,count:1};
-  else{allComponents[key].lastSeen=now;allComponents[key].count++;allComponents[key].health=c.health;allComponents[key].detail=c.detail||  c.health_detail||"";}
+      if(!allComponents[key])allComponents[key]={name:c.name,type:c.type||"other",health:c.health,detail:c.detail||c.health_detail||"",firstSeen:now,lastSeen:now,count:1};
+      else{allComponents[key].lastSeen=now;allComponents[key].count++;allComponents[key].health=c.health;allComponents[key].detail=c.detail||c.health_detail||"";}
     });
   }
   renderCompTable();
@@ -310,15 +425,14 @@ function renderAnalysis(data){
   renderLinks(data);
   renderIdeas(data);
   renderStats(data);
+  renderDiagram();
 }
 
 function renderCompTable(){
-  var keys=Object.keys(allComponents);
-  if(!keys.length)return;
+  var keys=Object.keys(allComponents);if(!keys.length)return;
   document.getElementById("compEmpty").style.display="none";
   document.getElementById("compTable").style.display="table";
-  setText("compCount",keys.length+"");
-  setText("statComps",keys.length+"");
+  setText("compCount",keys.length+"");setText("statComps",keys.length+"");
   var html="";
   keys.forEach(function(k){var c=allComponents[k];
     var hcls=c.health==="good"?"good":c.health==="damaged"?"damaged":"unknown";
@@ -337,23 +451,33 @@ function renderHealth(d){
   var goods=0,bads=0;Object.values(allComponents).forEach(function(c){if(c.health==="good")goods++;if(c.health==="damaged")bads++;});
   sum.innerHTML='<div class="health-label"><div class="hdot" style="background:var(--gr)"></div> '+goods+' healthy</div>'
     +'<div class="health-label"><div class="hdot" style="background:var(--rd)"></div> '+bads+' issues found</div>'
-    +(d.wiring_notes?'<div style="margin-top:4px;font-size:9px;color:var(--am)">'+esc(d.wiring_notes)+'</div>':"");
-  setText("statHealth",oh==="good"?"OK":oh==="needs_attention"?"WARN":"BAD");
+    +(d.wiring?'<div style="margin-top:4px;font-size:9px;color:var(--am)">'+esc(d.wiring)+'</div>':"");
+  var total=Object.keys(allComponents).length,goodCount=0;
+  Object.values(allComponents).forEach(function(c){if(c.health==="good")goodCount++;});
+  var pct=total>0?Math.round((goodCount/total)*100):0;
+  setText("statHealth",pct+"%");
 }
 
 function renderProtos(d){
-  var el=document.getElementById("protoList");
-  var html="";
-  if(d.protocols||d.protocols_detected){(d.protocols||d.protocols_detected||[]).forEach(function(p){html+='<span class="tag proto">'+esc(p)+'</span>';});}
+  var el=document.getElementById("protoList"),html="";
+  var protos=d.protocols||d.protocols_detected||[];
+  if(protos.length)protos.forEach(function(p){html+='<span class="tag proto">'+esc(p)+'</span>';});
   else html+='<span style="color:var(--td);font-size:9px">None detected</span>';
-  if(d.safety_warnings&&d.safety_warnings.length){html+='<div style="margin-top:6px">';d.safety_warnings.forEach(function(w){html+='<span class="tag warn">'+esc(w)+'</span>';});html+='</div>';}
+  if(d.warnings&&d.warnings.length){html+='<div style="margin-top:6px">';d.warnings.forEach(function(w){html+='<span class="tag warn">'+esc(w)+'</span>';});html+='</div>';}
+  else if(d.safety_warnings&&d.safety_warnings.length){html+='<div style="margin-top:6px">';d.safety_warnings.forEach(function(w){html+='<span class="tag warn">'+esc(w)+'</span>';});html+='</div>';}
   el.innerHTML=html;
 }
 
 function renderLinks(d){
-  var el=document.getElementById("linkList");var html="";
+  var el=document.getElementById("linkList"),html="";
+  var added={};
   Object.keys(allComponents).forEach(function(k){var name=allComponents[k].name;
-    Object.keys(DATASHEET_LINKS).forEach(function(dk){if(name.toLowerCase().indexOf(dk.toLowerCase())>=0)html+='<div class="link-item"><span style="color:var(--gr)">&#9741;</span><a href="'+DATASHEET_LINKS[dk]+'" target="_blank">'+dk+' Datasheet / Manual</a></div>';});
+    Object.keys(DATASHEET_LINKS).forEach(function(dk){
+      if(name.toLowerCase().indexOf(dk.toLowerCase())>=0&&!added[dk]){
+        added[dk]=true;
+        html+='<div class="link-item"><span style="color:var(--gr)">&#9741;</span><a href="'+DATASHEET_LINKS[dk]+'" target="_blank">'+dk+' Datasheet / Manual</a></div>';
+      }
+    });
   });
   if(d.datasheet_keywords&&d.datasheet_keywords.length){d.datasheet_keywords.forEach(function(kw){html+='<div class="link-item"><span style="color:var(--bl)">&#9906;</span><a href="https://www.google.com/search?q='+encodeURIComponent(kw+" datasheet PDF")+'" target="_blank">Search: '+esc(kw)+'</a></div>';});}
   el.innerHTML=html||'<span class="empty-state">No links yet</span>';
@@ -362,20 +486,79 @@ function renderLinks(d){
 
 function renderIdeas(d){
   var el=document.getElementById("ideaList");
-  if(!(d.ideas||d.project_ideas)||!(d.ideas||d.project_ideas).length){el.innerHTML='<span class="empty-state">Ideas appear with more components</span>';return;}
-  var html="";(d.ideas||d.project_ideas).forEach(function(idea,i){html+='<div class="idea-item"><span class="idea-num">'+(i+1)+'.</span><span>'+esc(idea)+'</span></div>';});
+  var ideas=d.ideas||d.project_ideas||[];
+  if(!ideas.length){el.innerHTML='<span class="empty-state">Ideas appear with more components</span>';return;}
+  var html="";ideas.forEach(function(idea,i){html+='<div class="idea-item"><span class="idea-num">'+(i+1)+'.</span><span>'+esc(idea)+'</span></div>';});
   el.innerHTML=html;
   document.getElementById("panelIdeas").classList.add("open");
 }
 
 function renderStats(d){
-  setText("statLevel",(d.complexity_score||"—").toUpperCase().substring(0,3));
+  setText("statLevel",(d.complexity||d.complexity_score||"—").toUpperCase().substring(0,3));
 }
 
-// ── UI ─────────────────────────────────────────
-function addMsg(r,t){var tr=document.getElementById("tr"),d=document.createElement("div");d.className="msg "+r;
-var ic={user:"YOU",ai:"AI",sys:"SYS"};d.innerHTML='<div class="mi">'+(ic[r]||"SYS")+'</div><div class="mc"></div>';if(r==="ai"&&t.indexOf("\n")>=0){d.querySelector(".mc").innerHTML='<pre style="white-space:pre-wrap;font-family:var(--mo);font-size:11px;margin:0;color:var(--tx)">'+esc(t)+'</pre>';}else{d.querySelector(".mc").textContent=t;}
-tr.appendChild(d);scrollT();return d;}
+// ── COMPONENT DIAGRAM ──────────────────────────
+function renderDiagram(){
+  var keys=Object.keys(allComponents);
+  if(!keys.length)return;
+  var board=lastAnalysis&&lastAnalysis.board?lastAnalysis.board:"Main Board";
+  var protos=lastAnalysis?(lastAnalysis.protocols||lastAnalysis.protocols_detected||[]):[];
+  var lines=[];
+  lines.push("┌─────────────────────────────────┐");
+  lines.push("│  "+board.substring(0,29).toUpperCase().padEnd(31)+"│");
+  lines.push("├─────────────────────────────────┤");
+  keys.slice(0,12).forEach(function(k){
+    var c=allComponents[k];
+    var icon=c.health==="good"?"✓":c.health==="damaged"?"✗":"?";
+    var name=c.name.substring(0,25).padEnd(25);
+    lines.push("│ ["+icon+"] "+name+"    │");
+  });
+  if(keys.length>12) lines.push("│     ... +"+(keys.length-12)+" more              │");
+  lines.push("├─────────────────────────────────┤");
+  var protoStr=protos.join(" | ")||"scanning...";
+  lines.push("│ Bus: "+protoStr.substring(0,25).padEnd(25)+"│");
+  lines.push("└─────────────────────────────────┘");
+  document.getElementById("compDiagram").textContent=lines.join("\n");
+  document.getElementById("panelDiagram").classList.add("open");
+}
+
+// ── SESSION EXPORT ─────────────────────────────
+function exportSession(){
+  var text="CircuitSense Session Report\n";
+  text+="Generated: "+new Date().toLocaleString()+"\n";
+  text+="═══════════════════════════════════════\n\n";
+  text+="COMPONENTS DETECTED ("+Object.keys(allComponents).length+")\n";
+  text+="───────────────────────────────────────\n";
+  Object.values(allComponents).forEach(function(c){
+    text+=c.name+" | Health: "+c.health+" | First: "+c.firstSeen+" | Last: "+c.lastSeen+"\n";
+  });
+  text+="\nPROTOCOLS\n───────────────────────────────────────\n";
+  if(lastAnalysis){
+    var p=lastAnalysis.protocols||lastAnalysis.protocols_detected||[];
+    text+=p.join(", ")||"None detected";
+  }
+  text+="\n\nCONVERSATION LOG\n───────────────────────────────────────\n";
+  sessionLog.forEach(function(l){text+="["+l.time+"] "+l.role.toUpperCase()+": "+l.text+"\n";});
+  text+="\n\n#GeminiLiveAgentChallenge | CircuitSense";
+  var blob=new Blob([text],{type:"text/plain"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="circuitsense-report-"+Date.now()+".txt";a.click();
+  addMsg("sys","Session report exported.");
+}
+
+// ── UI HELPERS ─────────────────────────────────
+function addMsg(r,t){
+  var tr=document.getElementById("tr"),d=document.createElement("div");
+  d.className="msg "+r;
+  var ic={user:"YOU",ai:"AI",sys:"SYS"};
+  d.innerHTML='<div class="mi">'+(ic[r]||"SYS")+'</div><div class="mc"></div>';
+  if(r==="ai"&&t.indexOf("\n")>=0){
+    d.querySelector(".mc").innerHTML='<pre style="white-space:pre-wrap;font-family:var(--mo);font-size:11px;margin:0;color:var(--tx)">'+esc(t)+'</pre>';
+  } else {
+    d.querySelector(".mc").textContent=t;
+  }
+  tr.appendChild(d);scrollT();return d;
+}
 function addTyping(){if(typingEl)return;var t=document.getElementById("tr");typingEl=document.createElement("div");typingEl.className="msg ai";
 typingEl.innerHTML='<div class="mi">AI</div><div class="mc"><span class="td1"></span><span class="td1"></span><span class="td1"></span></div>';t.appendChild(typingEl);scrollT();}
 function rmTyping(){if(typingEl){typingEl.remove();typingEl=null;}}

@@ -1,22 +1,38 @@
-import asyncio, base64, json, os
+"""
+CircuitSense — AI Electronics Lab Partner
+Built for the Gemini Live Agent Challenge #GeminiLiveAgentChallenge
+
+Dual-engine architecture:
+  Engine 1: Gemini Live API (real-time voice + vision)
+  Engine 2: Gemini 2.5 Flash (structured JSON analysis + text replies)
+
+Hosted on Google Cloud Run.
+"""
+
+import asyncio
+import base64
+import json
+import os
+import time
 from pathlib import Path
+
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from google import genai
 from google.genai import types
 
 load_dotenv()
-app = FastAPI()
+app = FastAPI(title="CircuitSense")
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-# Live API model for voice
+# Models
 LIVE_MODEL = "gemini-2.5-flash-native-audio-latest"
-# Fast text model for structured analysis
 TEXT_MODEL = "gemini-2.5-flash"
 
-SYSTEM = SYSTEM = """You are CircuitSense, an expert electronics lab partner.
+# System prompt for voice interactions
+SYSTEM = """You are CircuitSense, an expert electronics lab partner.
 You know ESP32, Arduino, STM32, MPU6050, nRF24L01, HC-SR04, LD2410C, I2C, SPI, UART, drone electronics, PCB design, soldering, and general electronics.
 When you see hardware: identify it, give pinout, spot faults. Be concise and direct.
 RULES:
@@ -32,16 +48,20 @@ RULES:
   GND ------------> GND
 - Keep ASCII diagrams compact and clear."""
 
-ANALYSIS_PROMPT = ANALYSIS_PROMPT =ANALYSIS_PROMPT = ANALYSIS_PROMPT = """Look at this electronics image. Return ONLY valid JSON:
+# Prompt for structured image analysis (JSON output)
+ANALYSIS_PROMPT = """Look at this electronics image. Return ONLY valid JSON:
 {"components":[{"name":"string","health":"good|damaged|unknown","detail":"short"}],"board":"string","protocols":["I2C"],"warnings":[],"ideas":["idea1","idea2","idea3"],"complexity":"beginner|intermediate|advanced","health":"good|needs_attention|damaged","wiring":"string","datasheet_keywords":["keyword"]}
 Keep component names SHORT (max 4 words). Max 8 components. No long descriptions."""
 
+
+# ── HTML SERVE ──────────────────────────────────────────────────────────
 @app.get("/")
 async def root():
     p = Path("static/index.html")
     return HTMLResponse(p.read_text() if p.exists() else "<h1>missing index.html</h1>")
 
 
+# ── STRUCTURED IMAGE ANALYSIS (Engine 2) ────────────────────────────────
 async def analyze_image(image_b64: str) -> dict:
     """Run structured analysis on a camera frame using fast text model."""
     try:
@@ -85,6 +105,8 @@ async def analyze_image(image_b64: str) -> dict:
         print(f"Analysis error: {e}")
         return None
 
+
+# ── TEXT ANSWER (Engine 2) ──────────────────────────────────────────────
 async def text_answer(question: str, image_b64: str = None) -> str:
     """Get a text answer from the fast model, with optional image context."""
     try:
@@ -110,7 +132,9 @@ async def text_answer(question: str, image_b64: str = None) -> str:
     except Exception as e:
         print(f"Text answer error: {e}")
         return None
-        
+
+
+# ── WEBSOCKET ENDPOINT (Engine 1 + Engine 2) ────────────────────────────
 @app.websocket("/ws")
 async def ws_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -128,13 +152,13 @@ async def ws_endpoint(websocket: WebSocket):
                 )
             )
         ),
-        thinking_config=types.ThinkingConfig(thinking_budget=0),
     )
 
     stop_event = asyncio.Event()
     ai_responding = asyncio.Event()
     analysis_lock = asyncio.Lock()
     last_analysis_time = 0
+    last_image_b64 = None  # Store latest camera frame for text replies
 
     try:
         async with client.aio.live.connect(
@@ -142,6 +166,7 @@ async def ws_endpoint(websocket: WebSocket):
         ) as session:
             print("Gemini session open")
 
+            # ── Keepalive ping ──────────────────────────────────────
             async def keepalive():
                 try:
                     while not stop_event.is_set():
@@ -153,6 +178,7 @@ async def ws_endpoint(websocket: WebSocket):
                 except asyncio.CancelledError:
                     pass
 
+            # ── Gemini Live API → Browser ───────────────────────────
             async def from_gemini():
                 try:
                     while not stop_event.is_set():
@@ -198,8 +224,9 @@ async def ws_endpoint(websocket: WebSocket):
                     print(f"Gemini error: {e}")
                     stop_event.set()
 
+            # ── Browser → Gemini + Analysis ─────────────────────────
             async def from_browser():
-                nonlocal last_analysis_time
+                nonlocal last_analysis_time, last_image_b64
                 try:
                     while not stop_event.is_set():
                         raw = await websocket.receive_text()
@@ -215,8 +242,9 @@ async def ws_endpoint(websocket: WebSocket):
 
                         elif msg["type"] == "image":
                             image_data = msg["data"]
+                            last_image_b64 = image_data
 
-                            # Send to Live API (skip if AI is responding)
+                            # Send to Live API (skip if AI responding)
                             if not ai_responding.is_set():
                                 await session.send_realtime_input(
                                     video=types.Blob(
@@ -226,18 +254,16 @@ async def ws_endpoint(websocket: WebSocket):
                                 )
 
                             # Run structured analysis every 15 seconds
-                            import time
                             now = time.time()
                             if now - last_analysis_time > 15:
                                 last_analysis_time = now
-                                # Run analysis in background
                                 asyncio.create_task(
                                     run_analysis(websocket, image_data)
                                 )
 
                         elif msg["type"] == "text":
                             user_text = msg["data"]
-                            # Send to Live API for voice response
+                            # Send to Live API for voice
                             await session.send_client_content(
                                 turns=types.Content(
                                     role="user",
@@ -245,13 +271,14 @@ async def ws_endpoint(websocket: WebSocket):
                                 ),
                                 turn_complete=True,
                             )
-                            # Also get text response for display
+                            # Also get fast text reply with image context
                             asyncio.create_task(
-                                send_text_reply(websocket, user_text)
+                                send_text_reply(
+                                    websocket, user_text, last_image_b64
+                                )
                             )
 
                         elif msg["type"] == "analyze":
-                            # Manual analysis request
                             if msg.get("image"):
                                 asyncio.create_task(
                                     run_analysis(websocket, msg["image"])
@@ -269,8 +296,8 @@ async def ws_endpoint(websocket: WebSocket):
                 finally:
                     stop_event.set()
 
+            # ── Helper: structured analysis ─────────────────────────
             async def run_analysis(ws, image_b64):
-                """Run structured analysis and send results."""
                 async with analysis_lock:
                     result = await analyze_image(image_b64)
                     if result:
@@ -281,18 +308,20 @@ async def ws_endpoint(websocket: WebSocket):
                             })
                         except Exception:
                             pass
-            async def send_text_reply(ws, question):
-                """Send text reply with optional image context."""
-                answer = await text_answer(question)
+
+            # ── Helper: text reply ──────────────────────────────────
+            async def send_text_reply(ws, question, img=None):
+                answer = await text_answer(question, img)
                 if answer:
                     try:
                         await ws.send_json({
                             "type": "text_reply",
-                            "data": answer
+                            "data": answer,
                         })
                     except Exception:
                         pass
-                        
+
+            # ── Run all tasks ───────────────────────────────────────
             tasks = [
                 asyncio.create_task(from_gemini()),
                 asyncio.create_task(from_browser()),
@@ -316,6 +345,7 @@ async def ws_endpoint(websocket: WebSocket):
             pass
 
 
+# ── ENTRY POINT ─────────────────────────────────────────────────────────
 if __name__ == "__main__":
     uvicorn.run(
         app,
