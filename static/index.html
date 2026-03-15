@@ -155,7 +155,8 @@ body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(
       <button class="mode-btn" id="mDiagnose" onclick="setMode('diagnose')">DIAGNOSE</button>
       <button class="mode-btn" id="mWire" onclick="setMode('wire')">WIRE</button>
       <button class="mode-btn" id="mLearn" onclick="setMode('learn')">LEARN</button>
-      <span style="margin-left:auto;font-family:var(--mo);font-size:8px;color:var(--td)" id="modeLabel">Mode: SCAN</span>
+      <button class="mode-btn" onclick="scanNow()" style="margin-left:auto;background:rgba(68,136,255,.1);border-color:rgba(68,136,255,.3);color:var(--bl)">SCAN NOW</button>
+<span style="font-family:var(--mo);font-size:8px;color:var(--td)" id="modeLabel">Mode: SCAN</span>
     </div>
     <!-- Transcript -->
     <div class="ts">
@@ -411,6 +412,7 @@ var DATASHEET_LINKS={"ESP32":"https://www.espressif.com/sites/default/files/docu
 
 function renderAnalysis(data){
   lastAnalysis=data;
+  if(data.components&&data.components.length===0){document.getElementById("healthSummary").innerHTML='<div style="color:var(--am)">No electronics detected — try repositioning camera</div>';return;}
   var now=new Date().toLocaleTimeString();
   if(data.components&&data.components.length){
     data.components.forEach(function(c){
@@ -436,7 +438,7 @@ function renderCompTable(){
   var html="";
   keys.forEach(function(k){var c=allComponents[k];
     var hcls=c.health==="good"?"good":c.health==="damaged"?"damaged":"unknown";
-    html+='<tr><td><span class="comp-name">'+esc(c.name)+'</span></td><td><span class="comp-health '+hcls+'">'+c.health+'</span></td><td class="comp-time">'+c.lastSeen+'</td></tr>';
+    html+='<tr style="cursor:pointer" onclick="askAbout(\''+esc(c.name).replace(/'/g,"\\'")+'\')""><td><span class="comp-name">'+esc(c.name)+'</span></td><td><span class="comp-health '+hcls+'">'+c.health+'</span></td><td class="comp-time">'+c.lastSeen+'</td></tr>';
   });
   document.getElementById("compBody").innerHTML=html;
 }
@@ -566,6 +568,8 @@ function scrollT(){document.getElementById("tr").scrollTop=99999;}
 function dot(id,c){document.getElementById(id).className="dot"+(c?" "+c:"");}
 function setText(id,v){document.getElementById(id).textContent=v;}
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+function askAbout(name){if(!ws||ws.readyState!==1)return;var q="Tell me about the "+name+". What is it, what does it do, and is it in good condition?";document.getElementById("ti").value=q;sendText();}
+function scanNow(){if(!ws||ws.readyState!==1||!camOn){addMsg("sys","Connect and enable camera first");return;}addMsg("sys","Manual scan triggered");ws.send(JSON.stringify({type:"analyze",image:null}));setSt("thinking","Running manual scan...");}
 function togglePanel(id){document.getElementById(id).classList.toggle("open");}
 
 document.addEventListener("click",function(){if(playCtx&&playCtx.state==="suspended")playCtx.resume();if(micCtx&&micCtx.state==="suspended")micCtx.resume();});
