@@ -2,7 +2,6 @@
   <img src="https://img.shields.io/badge/Gemini_Live_API-2.5_Flash-blue?style=for-the-badge" alt="Gemini"/>
   <img src="https://img.shields.io/badge/Google_Cloud-Run-green?style=for-the-badge" alt="Cloud Run"/>
   <img src="https://img.shields.io/badge/Python-FastAPI-yellow?style=for-the-badge" alt="Python"/>
-  <img src="https://img.shields.io/badge/License-MIT-red?style=for-the-badge" alt="License"/>
 </p>
 
 # ⚡ CircuitSense — AI Electronics Lab Partner
@@ -179,16 +178,9 @@ Tested successfully on:
 - **Category:** Live Agents
 - **Challenge:** Gemini Live Agent Challenge
 - **Cloud:** Google Cloud Run (europe-west1)
-- **Blog:** [dev.to/kryptonus_vicky](https://dev.to/kryptonus_vicky/building-circuitsense-how-i-built-a-dual-engine-ai-lab-partner-that-sees-your-hardware-3mfs)
+- **Blog:** https://dev.to/kryptonus_vicky/building-circuitsense-how-i-built-a-dual-engine-ai-lab-partner-that-sees-your-hardware-3mf4
 
 ---
-
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
----
-
 <p align="center">
   Built with ❤️ for the <a href="https://geminiliveagentchallenge.devpost.com/">Gemini Live Agent Challenge</a><br/>
   <strong>#GeminiLiveAgentChallenge</strong>
