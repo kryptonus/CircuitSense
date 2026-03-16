@@ -381,9 +381,9 @@ function startCam(){
     dot("camDot","g");setText("camStatus","CAM ON");setText("visionTag","ACTIVE");camOn=true;
     frameInt=setInterval(function(){
       if(!ws||ws.readyState!==1)return;
-      var c=document.createElement("canvas");c.width=320;c.height=240;
+      var c=document.createElement("canvas");c.width=640;c.height=480;
       c.getContext("2d").drawImage(v,0,0,320,240);
-      ws.send(JSON.stringify({type:"image",data:c.toDataURL("image/jpeg",.7).split(",")[1]}));
+      ws.send(JSON.stringify({type:"image",data:c.toDataURL("image/jpeg",.85).split(",")[1]}));
     },1000);
   }).catch(function(err){addMsg("sys","Camera: "+err.message);});
 }

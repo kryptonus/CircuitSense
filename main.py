@@ -33,20 +33,21 @@ TEXT_MODEL = "gemini-2.5-flash"
 
 # System prompt for voice interactions
 SYSTEM = """You are CircuitSense, an expert electronics lab partner.
-CRITICAL RULES:
-- ONLY describe what you can CLEARLY SEE. If you cannot read text/markings on a chip, say "unidentified IC" or "unknown module."
-- NEVER say "Arduino", "ESP32", "Raspberry Pi" or any specific board name unless you can clearly read the text printed on it.
-- If the image is blurry, say so. Do NOT guess.
-- Keep replies to 2-3 sentences max.
-- Note physical condition: damage, bent pins, burn marks, corrosion.
-- Never narrate your reasoning. Just answer directly.
-- When asked about wiring, include compact ASCII diagrams.
-- If you cannot hear the user, say so briefly."""
+When you see hardware: identify what you can clearly see, note physical condition, spot any faults.
+Keep replies to 2-3 sentences max. Be concise and direct.
+Only describe components you can actually see — never guess.
+When asked about wiring, include a simple ASCII diagram."""
 # Prompt for structured image analysis (JSON output)
-ANALYSIS_PROMPT = """Look at this electronics image. Return ONLY valid JSON:
+ANALYSIS_PROMPT =ANALYSIS_PROMPT = """Look at this electronics image carefully. Return ONLY valid JSON:
 {"components":[{"name":"string","health":"good|damaged|unknown","detail":"short"}],"board":"string","protocols":["I2C"],"warnings":[],"ideas":["idea1","idea2","idea3"],"complexity":"beginner|intermediate|advanced","health":"good|needs_attention|damaged","wiring":"string","datasheet_keywords":["keyword"]}
-CRITICAL: Only list components you can ACTUALLY SEE. Never guess. If you can't read a chip marking, call it "Unknown IC" not "ESP32".
-Keep component names SHORT (max 4 words). Max 8 components. No long descriptions."""
+RULES:
+- Only list components you can ACTUALLY SEE.
+- If you can't read a chip marking, call it "Unknown IC".
+- CHECK PIN HEADERS CAREFULLY: if ANY pins look bent, crooked, or misaligned, mark that component health as "damaged" and detail as "bent pins".
+- CHECK SOLDER JOINTS: if any look dull or cracked, mark as "damaged".
+- If ANY component has issues, set overall health to "needs_attention".
+- Be pessimistic about health — flag anything suspicious.
+Max 8 components. Short names only."""
 
 # ── HTML SERVE ──────────────────────────────────────────────────────────
 @app.get("/")
@@ -146,7 +147,11 @@ async def ws_endpoint(websocket: WebSocket):
                 )
             )
         ),
+        thinking_config=types.ThinkingConfig(
+            thinking_budget=0
+        ),
     )
+
 
     stop_event = asyncio.Event()
     ai_responding = asyncio.Event()
@@ -300,6 +305,22 @@ async def ws_endpoint(websocket: WebSocket):
                                 "type": "analysis",
                                 "data": result,
                             })
+                            summary = "FORGET all previous hardware. NEW scan result: "
+                            if result.get("components"):
+                                names = [c["name"] for c in result["components"]]
+                                summary += "Components found: " + ", ".join(names) + ". "
+                            if result.get("health"):
+                                summary += "Health: " + result["health"] + ". "
+                            if result.get("protocols"):
+                                summary += "Protocols: " + ", ".join(result["protocols"]) + ". "
+                            summary += "ONLY talk about these components from now on."
+                            await session.send_client_content(
+                                turns=types.Content(
+                                    role="user",
+                                    parts=[types.Part(text=summary)],
+                                ),
+                                turn_complete=False,
+                            )
                         except Exception:
                             pass
 
