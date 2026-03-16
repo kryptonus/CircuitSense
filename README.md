@@ -12,7 +12,7 @@ CircuitSense is a real-time AI lab assistant that **sees your electronics throug
 
 **Built for the [Gemini Live Agent Challenge](https://geminiliveagentchallenge.devpost.com/) #GeminiLiveAgentChallenge**
 
-🔗 **[Live Demo](https://circuitsense-657058316571.europe-west1.run.app)** · 📝 **[Blog Post](https://dev.to/kryptonus_vicky/building-circuitsense-how-i-built-a-dual-engine-ai-lab-partner-that-sees-your-hardware-3mfs)** · 🎥 **Demo Video** (coming soon)
+🔗 **[Live Demo](https://circuitsense-657058316571.europe-west1.run.app)** · 📝 **[Blog Post](https://dev.to/kryptonus_vicky/building-circuitsense-how-i-built-a-dual-engine-ai-lab-partner-that-sees-your-hardware-3mf4)** · 🎥 **Demo Video** (coming soon)
 
 ---
 
